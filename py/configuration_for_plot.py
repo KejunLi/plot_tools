@@ -19,7 +19,7 @@ def config_plot():
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
     
     # figure size
-    plt.figure(num=1, figsize=(12,9), dpi=160, facecolor='w', edgecolor='k')
+    plt.figure(num=1, figsize=(10,7.5), dpi=120, facecolor='w', edgecolor='k')
 
     # make y-axis into scientific notation, for more options go to the following website
     # https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.axes.Axes.ticklabel_format.html

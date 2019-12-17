@@ -92,9 +92,20 @@ def sort_nk_fenergy(d_dir):
     print(xy_plot)
     return(xy_plot)
 
+# set the minimum of etot to be 0 as the reference energy, and rearrange the others
+def rearrange_etot(d_dir):
+    list_xy = sort_nk_fenergy(d_dir)
+    min_etot = min(list_xy[1])
+    new_list_etot = []
+    for etot in list_xy[1]:
+        new_list_etot.append(etot-min_etot)
+    new_list = [list_xy[0], new_list_etot]
+    return(new_list)
+
 
 destination = "/home/likejun/work/hBN/Ti/"
-xy = sort_nk_fenergy(destination)
+# xy = sort_nk_fenergy(destination)
+xy = rearrange_etot(destination)
 x_nk = xy[0]
 y_etot = xy[1]
 
@@ -115,11 +126,11 @@ for i in num_points:
 config_plot()
 # make y-axis into scientific notation, for more options go to the following website
 # https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.axes.Axes.ticklabel_format.html
-plt.ticklabel_format(axis='y', style='plain', scilimits=(0,0), useOffset=None, useMathText=True)
+plt.ticklabel_format(axis='y', style='sci', scilimits=(0,0), useOffset=None, useMathText=True)
 
 plt.plot(x, y, linewidth=1.5, marker = 'o')
-ply.xlabel('Iteration')
-ply.ylabel('E (eV)')
+plt.xlabel('nk')
+plt.ylabel('E (eV)')
 # change the x ticks
 # plt.xticks(np.arange(min(x), max(x)+1, 5.0))
 
