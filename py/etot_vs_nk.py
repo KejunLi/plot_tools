@@ -130,7 +130,7 @@ plt.ticklabel_format(axis='y', style='sci', scilimits=(0,0), useOffset=None, use
 
 plt.plot(x, y, linewidth=1.5, marker = 'o')
 plt.xlabel('nk')
-plt.ylabel('E (eV)')
+plt.ylabel('E$_{tot}$ (eV)')
 # change the x ticks
 # plt.xticks(np.arange(min(x), max(x)+1, 5.0))
 

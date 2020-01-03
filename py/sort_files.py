@@ -35,10 +35,10 @@ def sort_var_and_f(l_f):
     l_var = []
     for f_name in l_f:
         #raw_var = re.findall(r"[+-]?\d+|[+-]?^\d*\.\d*|0", f_name)
-        raw_var = re.findall(r"[+-]?\d+\.\d*", f_name)
-        print(raw_var)
+        raw_var = re.findall(r"\d+\.\d*", f_name)
+        #print(raw_var)
         var = float(raw_var[0])
-        print(var)
+        #print(var)
         l_var.append(var)
     #print(l_var)
     sl_var = sorted(l_var)
