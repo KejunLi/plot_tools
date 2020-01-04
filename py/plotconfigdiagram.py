@@ -54,10 +54,13 @@ def poly_fit(x, c1, c2, c3):
     return(y)
 
 ################################### Input ############################################
-directory = "/home/likejun/work/hBN/Ti/nonradia/my_template_yinan_structure"
-deltaQ = 0.6056841293581344 # change of nuclear coordinate
+directory = "/home/KEJUNLI/work/hBN/Ti/nonradia/my_template_yinan_structure"
+dQ = 1.136793832893554 # change of nuclear coordinate
+#dQ = 0.6056841293581344
 min_x = -0.4
-max_x = 1.2
+max_x = 1.6
+label = ["TiBN (gs)", "TiBN (ex)"] # label the two curves
+title = "TiBN (yinan)"
 ######################################################################################
 
 # this part looks for all the scf.out files and save in the list for ground state and excited state, respectively.
@@ -76,30 +79,67 @@ for d_ratio in dir_ratio:
 # print(dir_f)
 
 # this part refines the scf.out files and extracts the ratio of linear extrapolation and corresponding total energies
-min_etot = np.zeros((1,), dtype = float)
-#print(m_etot)
 set_etot = []
-set_deltaQ = [] # nuclear coordinate
+set_dQ = [] # nuclear coordinate
 for i, d_f in enumerate(dir_f):
+    #print(d_f)
     l_etot = []
     nuc_coord = [] # nuclear coordinate
     s_ratio = sort_var_and_f(d_f)[0]
     s_dir_f = sort_var_and_f(d_f)[1]
     #print(s_ratio, s_dir_f)
     for j in range(len(s_dir_f)):
-        nuc_coord.append(s_ratio[j]*deltaQ)
+        nuc_coord.append(s_ratio[j]*dQ)
         l_etot.append(extract_etot(s_dir_f[j])[0])
-    set_deltaQ.append(nuc_coord)
+    set_dQ.append(nuc_coord)
     set_etot.append(l_etot)
-    if min_etot > min(l_etot):
-        min_etot = min(l_etot)
     #print(min_etot)
 
-color_list = ["tab:red", "tab:green", "tab:blue", "tab:purple", "tab:pink", "tab:cyan", "tab:orange"]
+# obtain ZPL and E_rel, and preplot
+min_etot = min(min(set_etot[0]), min(set_etot[1]))
+max_etot = max(max(set_etot[0]), max(set_etot[1]))
+for i in range(len(set_etot)):
+    if min(set_etot)[i] - min_etot > 0.0:
+        sec_min_etot = min(set_etot[i])
+    if max(set_etot[i]) - max_etot < 0.0:
+        sec_max_etot = max(set_etot[i])
+        print(sec_max_etot, max_etot)
+E_zpl = format(sec_min_etot - min_etot, ".3f")
+E_rel = format(sec_max_etot - min_etot, ".3f")
+print("The ZPL is {} eV".format(E_zpl, E_rel))
+print("The energy of gs in es geometry is {} eV".format(E_rel))
+
+# this part plots
+config_plot()
+color_list = ["tab:blue", "tab:red"]  
+axes = plt.gca()
+ylim = axes.get_ylim()
+offset = 0.1
+offset_1 = 0.003
+# plot grids and arrows
+for i in range(len(set_etot)):
+    y_min = min(set_etot[i])-min_etot
+    y_max = max(set_etot[i])-min_etot
+    plt.hlines(y_min, min_x, max_x, linestyles="dashed")
+    #plt.text(max(set_dQ[0])+offset*3, y_min+offset*0.3, label[i])
+    plt.text((min_x+max_x)/1.6, y_min+offset*0.8*np.power(-1.0,i), label[i])
+    if min(set_etot[i]) - min_etot == 0:
+        plt.hlines(y_max, max(set_dQ[0]), max(set_dQ[0])+offset, linestyles="solid")
+plt.vlines(min(set_dQ[0]), -10, 10, linestyles="dashed")
+plt.vlines(max(set_dQ[0]), -10, 10, linestyles="dashed")
+plt.annotate('', xy=(min(set_dQ[0])-offset*2, min(set_etot[0])-min_etot-offset_1), 
+        xytext=(min(set_dQ[0])-offset*2, min(set_etot[1])-min_etot+offset_1), 
+        arrowprops=dict(arrowstyle="<|-|>", color = "k"))
+plt.annotate('', xy=(max(set_dQ[0])+offset, min(set_etot[0])-min_etot-offset_1),
+        xytext=(max(set_dQ[0])+offset, max(set_etot[0])-min_etot+offset_1),
+        arrowprops=dict(arrowstyle="<|-|>", color = "k"))
+plt.text(min(set_dQ[0])-offset*3, (min(set_etot[1])+min(set_etot[0]))/2.0-min_etot, "\u0394E")
+plt.text(max(set_dQ[0])+offset*1.2, (min(set_etot[0])+max(set_etot[0]))/2.0-min_etot, "\u0394E$_{rel}$")
+
 for i in range(len(set_etot)):
     ################### fit data #######################################################
     init_vals = [0.5, 0.5, 0.5] # for c1, c2, c3
-    best_vals, covar = curve_fit(poly_fit, set_deltaQ[i], set_etot[i], p0=init_vals)
+    best_vals, covar = curve_fit(poly_fit, set_dQ[i], set_etot[i], p0=init_vals)
     print("best_vals: {}".format(best_vals))
     ####################################################################################
     x = np.arange(min_x, max_x, 0.001)
@@ -107,57 +147,17 @@ for i in range(len(set_etot)):
     for k in range(len(x)):
         y_temp = poly_fit(x[k], best_vals[0], best_vals[1], best_vals[2]) - min_etot
         y.append(y_temp)
-    plt.plot(x, y, color = color_list[i])
+    plt.plot(x, y, linewidth=2, color=color_list[i])
     for j in range(len(set_etot[i])):
         etot = set_etot[i][j]-min_etot
         # print(etot)
-        plt.plot(set_deltaQ[i][j], etot, marker = "o", markersize = 4, color = color_list[i])
+        plt.plot(set_dQ[i][j], etot, marker="o", markersize=6, markerfacecolor="w", color=color_list[i])
 
-    #plt.plot(s_ratio, l_etot)
 
-config_plot()
-#plt.plot([0,1], [l_min_etot[1]-l_min_etot[0],l_min_etot[1]-l_min_etot[0]], "k:")
 #plt.text(0.75, 0.2, "E$_{ZPL}$ = "+str(round(l_min_etot[1]-l_min_etot[0], 3))+"eV")
 plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
 plt.ylabel("E (eV)")
-plt.title("Kejun")
+plt.title(title)
 plt.xlim([min_x,max_x])
+plt.ylim([min(set_etot[0])-min_etot-0.05,max(set_etot[1])-min_etot+0.05])
 plt.show()
-
-"""
-config_plot()
-
-a = [0, 0]
-l_min_etot = [0, 0]
-l_ratio = [0.0000, 0.0500, 0.1000, 0.1500, 0.2000, 0.2500, 0.5000, 0.7500, 0.8000, 0.8500, 0.9000, 0.9500, 1.0000]
-destination = ["/home/KEJUNLI/work/hBN/Ti/nonradia/my_template_yinan_structure/lin-gs", "/home/KEJUNLI/work/hBN/Ti/nonradia/my_template_yinan_structure/lin-cdftup1"]
-plt.plot([0,1], [0,0], "k:")
-for i, d in enumerate(destination):
-    l_etot = []
-    sle = []
-    for ratio in l_ratio:
-        ratio = format(ratio, ".4f")
-        d_dir = d + "ratio-" + str(ratio) + "/" 
-        l_etot.append(extract_etot(d_dir, "scf.out"))
-    #print(l_ratio)
-    #print(l_etot)
-    l_min_etot[i] = min(l_etot)[0]
-    a[i] = l_etot[12][0]
-    print(l_min_etot[i])
-    print(l_etot[0][0]-l_min_etot[0])
-    print(l_min_etot[1]-a[0])
-    for etot in l_etot:
-        sle.append(float(etot[0]-l_min_etot[0]))
-    color_list = ["tab:red", "tab:orange", "tab:green", "tab:blue", "tab:purple", "tab:pink", "tab:cyan"]
-    plt.plot(l_ratio, sle, marker = "", markersize = 2, color = color_list[i+1])
-#plt.legend(loc = "upper left")
-plt.plot([0,1], [l_min_etot[1]-l_min_etot[0],l_min_etot[1]-l_min_etot[0]], "k:")
-plt.text(0.75, 0.2, "E$_{ZPL}$ = "+str(round(l_min_etot[1]-l_min_etot[0], 3))+"eV")
-plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
-plt.ylabel("E (eV)")
-plt.title("Kejun")
-plt.xlim([0,1])
-plt.show()
-
-
-"""
