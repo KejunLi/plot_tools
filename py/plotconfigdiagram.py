@@ -154,7 +154,6 @@ for i in range(len(set_etot)):
         plt.plot(set_dQ[i][j], etot, marker="o", markersize=6, markerfacecolor="w", color=color_list[i])
 
 
-#plt.text(0.75, 0.2, "E$_{ZPL}$ = "+str(round(l_min_etot[1]-l_min_etot[0], 3))+"eV")
 plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
 plt.ylabel("E (eV)")
 plt.title(title)
