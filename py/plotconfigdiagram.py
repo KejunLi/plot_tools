@@ -54,17 +54,19 @@ def poly_fit(x, c1, c2, c3):
     return(y)
 
 ################################### Input ############################################
-directory = "/home/KEJUNLI/work/hBN/Ti/nonradia/my_template_yinan_structure"
-dQ = 1.136793832893554 # change of nuclear coordinate
-#dQ = 0.6056841293581344
+directory = "/home/likejun/work/hBN/Ti/nonradia/my_template_my_structure"
+#dQ = 1.136793832893554 # change of nuclear coordinate
+dQ = 0.6056841293581344
 min_x = -0.4
 max_x = 1.6
+min_y = -0.05
+max_y = 0.6
 label = ["TiBN (gs)", "TiBN (ex)"] # label the two curves
 title = "TiBN (yinan)"
 ######################################################################################
 
 # this part looks for all the scf.out files and save in the list for ground state and excited state, respectively.
-ir_lin = []
+dir_lin = []
 dir_ratio = []
 dir_f = []
 dir_lin = files_in_dir(directory, "lin")[1]
@@ -99,13 +101,13 @@ for i, d_f in enumerate(dir_f):
 min_etot = min(min(set_etot[0]), min(set_etot[1]))
 max_etot = max(max(set_etot[0]), max(set_etot[1]))
 for i in range(len(set_etot)):
-    if min(set_etot)[i] - min_etot > 0.0:
+    if min(set_etot[i]) - min_etot > 0.0:
         sec_min_etot = min(set_etot[i])
     if max(set_etot[i]) - max_etot < 0.0:
         sec_max_etot = max(set_etot[i])
         print(sec_max_etot, max_etot)
-E_zpl = format(sec_min_etot - min_etot, ".3f")
-E_rel = format(sec_max_etot - min_etot, ".3f")
+E_zpl = float(format(sec_min_etot - min_etot, ".3f"))
+E_rel = float(format(sec_max_etot - min_etot, ".3f"))
 print("The ZPL is {} eV".format(E_zpl, E_rel))
 print("The energy of gs in es geometry is {} eV".format(E_rel))
 
@@ -114,27 +116,42 @@ config_plot()
 color_list = ["tab:blue", "tab:red"]  
 axes = plt.gca()
 ylim = axes.get_ylim()
-offset = 0.1
-offset_1 = 0.003
+x_offset = 0.1
+y_offset = 0.005
+
 # plot grids and arrows
-for i in range(len(set_etot)):
-    y_min = min(set_etot[i])-min_etot
-    y_max = max(set_etot[i])-min_etot
-    plt.hlines(y_min, min_x, max_x, linestyles="dashed")
-    #plt.text(max(set_dQ[0])+offset*3, y_min+offset*0.3, label[i])
-    plt.text((min_x+max_x)/1.6, y_min+offset*0.8*np.power(-1.0,i), label[i])
-    if min(set_etot[i]) - min_etot == 0:
-        plt.hlines(y_max, max(set_dQ[0]), max(set_dQ[0])+offset, linestyles="solid")
+#for i in range(len(set_etot)):
+#    y_1 = min(set_etot[i])-min_etot
+#    y_2 = max(set_etot[i])-min_etot
+#    plt.hlines(y_1, min_x, max_x, linestyles="dashed")
+#    #plt.text(max(set_dQ[0])+offset*3, y_min+offset*0.3, label[i])
+#    plt.text((min_x+max_x)/1.6, y_2+x_offset*0.8*np.power(-1.0,i), label[i])
+#    if min(set_etot[i]) - min_etot == 0:
+#        plt.hlines(y_2, max(set_dQ[0]), max(set_dQ[0])+x_offset, linestyles="solid")
+
+plt.hlines(0.0, min_x, max_x, linestyles="dashed")
+plt.hlines(E_zpl, min_x, max_x, linestyles="dashed")
 plt.vlines(min(set_dQ[0]), -10, 10, linestyles="dashed")
 plt.vlines(max(set_dQ[0]), -10, 10, linestyles="dashed")
-plt.annotate('', xy=(min(set_dQ[0])-offset*2, min(set_etot[0])-min_etot-offset_1), 
-        xytext=(min(set_dQ[0])-offset*2, min(set_etot[1])-min_etot+offset_1), 
+plt.hlines(E_rel, max(set_dQ[0]), max(set_dQ[0])+x_offset, linestyles="solid")
+
+plt.annotate('', xy=(min(set_dQ[0])-x_offset*2, -y_offset), 
+        xytext=(min(set_dQ[0])-x_offset*2, E_zpl+y_offset),
         arrowprops=dict(arrowstyle="<|-|>", color = "k"))
-plt.annotate('', xy=(max(set_dQ[0])+offset, min(set_etot[0])-min_etot-offset_1),
-        xytext=(max(set_dQ[0])+offset, max(set_etot[0])-min_etot+offset_1),
+plt.annotate('', xy=(max(set_dQ[0])+x_offset, -y_offset),
+        xytext=(max(set_dQ[0])+x_offset, E_rel+y_offset),
         arrowprops=dict(arrowstyle="<|-|>", color = "k"))
-plt.text(min(set_dQ[0])-offset*3, (min(set_etot[1])+min(set_etot[0]))/2.0-min_etot, "\u0394E")
-plt.text(max(set_dQ[0])+offset*1.2, (min(set_etot[0])+max(set_etot[0]))/2.0-min_etot, "\u0394E$_{rel}$")
+
+#plt.text((min_x+max_x)/1.6, E_rel+0.1, label[0])
+
+plt.text(min(set_dQ[0])-x_offset*3, E_zpl/2.0, "\u0394E")
+plt.text(max(set_dQ[0])+x_offset*1.2, E_rel/2.0, "\u0394E$_{rel}$")
+for i in range(len(set_etot)):
+    if min(set_etot[i]) - min_etot == 0:
+        plt.text((min_x+max_x)/1.6, E_rel+0.1, label[i])
+    elif min(set_etot[i]) - sec_min_etot == 0:
+        plt.text((min_x+max_x)/1.6, E_zpl-0.1, label[i])
+
 
 for i in range(len(set_etot)):
     ################### fit data #######################################################
@@ -158,5 +175,5 @@ plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
 plt.ylabel("E (eV)")
 plt.title(title)
 plt.xlim([min_x,max_x])
-plt.ylim([min(set_etot[0])-min_etot-0.05,max(set_etot[1])-min_etot+0.05])
+plt.ylim([min_y,max_y])
 plt.show()
