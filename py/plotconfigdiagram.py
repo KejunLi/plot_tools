@@ -61,8 +61,8 @@ min_x = -0.4
 max_x = 1.6
 min_y = -0.05
 max_y = 0.6
-label = ["TiBN (gs)", "TiBN (ex)"] # label the two curves
-title = "TiBN (yinan)"
+label = ["TiBN (ex)", "TiBN (gs)"] # label the two curves
+title = "TiBN (Kejun)"
 ######################################################################################
 
 # this part looks for all the scf.out files and save in the list for ground state and excited state, respectively.
@@ -147,9 +147,9 @@ plt.annotate('', xy=(max(set_dQ[0])+x_offset, -y_offset),
 plt.text(min(set_dQ[0])-x_offset*3, E_zpl/2.0, "\u0394E")
 plt.text(max(set_dQ[0])+x_offset*1.2, E_rel/2.0, "\u0394E$_{rel}$")
 for i in range(len(set_etot)):
-    if min(set_etot[i]) - min_etot == 0:
+    if min(set_etot[i]) - min_etot == 0.0:
         plt.text((min_x+max_x)/1.6, E_rel+0.1, label[i])
-    elif min(set_etot[i]) - sec_min_etot == 0:
+    elif min(set_etot[i]) - sec_min_etot == 0.0:
         plt.text((min_x+max_x)/1.6, E_zpl-0.1, label[i])
 
 
