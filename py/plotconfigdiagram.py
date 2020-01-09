@@ -13,8 +13,7 @@ from functions_fit import poly_fit
 
 ################################### Input ############################################
 directory = "/home/likejun/work/hBN/Ti/supercell_88"
-#dQ = 1.136793832893554 # change of nuclear coordinate
-dQ = 0.6056841293581344
+dQ = 1.136793832893554 # change of nuclear coordinate
 min_x = -0.4
 max_x = 1.6
 min_y = -0.05
@@ -76,16 +75,6 @@ ylim = axes.get_ylim()
 x_offset = 0.1
 y_offset = 0.005
 
-# plot grids and arrows
-#for i in range(len(set_etot)):
-#    y_1 = min(set_etot[i])-min_etot
-#    y_2 = max(set_etot[i])-min_etot
-#    plt.hlines(y_1, min_x, max_x, linestyles="dashed")
-#    #plt.text(max(set_dQ[0])+offset*3, y_min+offset*0.3, label[i])
-#    plt.text((min_x+max_x)/1.6, y_2+x_offset*0.8*np.power(-1.0,i), label[i])
-#    if min(set_etot[i]) - min_etot == 0:
-#        plt.hlines(y_2, max(set_dQ[0]), max(set_dQ[0])+x_offset, linestyles="solid")
-
 plt.hlines(0.0, min_x, max_x, linestyles="dashed")
 plt.hlines(E_zpl, min_x, max_x, linestyles="dashed")
 plt.vlines(min(set_dQ[0]), -10, 10, linestyles="dashed")
@@ -99,8 +88,6 @@ plt.annotate('', xy=(max(set_dQ[0])+x_offset, -y_offset),
         xytext=(max(set_dQ[0])+x_offset, E_rel+y_offset),
         arrowprops=dict(arrowstyle="<|-|>", color = "k"))
 
-#plt.text((min_x+max_x)/1.6, E_rel+0.1, label[0])
-
 plt.text(min(set_dQ[0])-x_offset*3, E_zpl/2.0, "\u0394E")
 plt.text(max(set_dQ[0])+x_offset*1.2, E_rel/2.0, "\u0394E$_{rel}$")
 for i in range(len(set_etot)):
@@ -108,7 +95,6 @@ for i in range(len(set_etot)):
         plt.text((min_x+max_x)/1.6, E_rel+0.1, label[i])
     elif min(set_etot[i]) - sec_min_etot == 0.0:
         plt.text((min_x+max_x)/1.6, E_zpl-0.1, label[i])
-
 
 for i in range(len(set_etot)):
     ################### fit data #######################################################
@@ -126,7 +112,6 @@ for i in range(len(set_etot)):
         etot = set_etot[i][j]-min_etot
         # print(etot)
         plt.plot(set_dQ[i][j], etot, marker="o", markersize=6, markerfacecolor="w", color=color_list[i])
-
 
 plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
 plt.ylabel("E (eV)")
