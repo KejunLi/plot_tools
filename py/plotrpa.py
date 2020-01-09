@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 import os
-from ascending_files import sort_var_and_f, refine_f
+from sort_files import sort_var_and_f
+from extraction import extract_fn
 from var_color import var_color
 from configuration_for_plot import config_plot
 
-def extract_data(d_dir, f_name):
+def extract_eps(d_dir, f_name):
     raw_data = []
     E = []
     re_eps = []
@@ -37,10 +38,10 @@ def plot_pen(d_dir):
     # print(sl_var, sl_f)
     sl_rf = []
     for f_name in sl_f:
-        rf_name = refine_f(f_name)
+        rf_name = extract_fn(f_name)
         sl_rf.append(rf_name)
     for i, f_name in enumerate(sl_f):
-        data_set = extract_data(d_dir, f_name)
+        data_set = extract_eps(d_dir, f_name)
         # color_list = ["tab:red", "tab:orange", "tab:green", "tab:blue", "tab:purple", "tab:pink", "tab:cyan"]
         # marker_list = ["", "", "", "", "", "", "", "", "", "", ""]
         # plt.plot(data_set[0], data_set[2], marker = marker_list[i], markersize = 2, color = color_list[i+1], label = data_set[3])

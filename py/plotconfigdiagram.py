@@ -7,54 +7,12 @@ import re
 import os
 from scipy.optimize import curve_fit
 from configuration_for_plot import config_plot
-from sort_files import sort_var_and_f
-
-def extract_etot(dir_f):
-    """
-    read *.out to find lines with total energy and extract data from lines
-    """
-    with open(dir_f, "r") as f:
-        lines = f.readlines()
-        saved_data = []
-        # unit conversion
-        ry2ev = 13.6056980659
-        for line in lines:
-            if "!" in line:
-                # \d +  # the integral part
-                # \.    # the decimal point
-                # \d *  # some fractional digits
-                raw_etot = re.findall(r"[+-]?\d+\.\d*", line) 
-                etot = float(raw_etot[0])*ry2ev
-                saved_data.append(etot)
-    return(saved_data)
-
-
-def files_in_dir(d_dir, con_f):
-    """
-    collect files with satisfactory names in a designated directory
-    objective files should contain con_f in their names
-    """
-    d_dir = d_dir + "/"
-    l_f = []
-    l_df = []
-    for f_name in os.listdir(d_dir):
-        if con_f in f_name:
-            l_f.append(f_name)
-            l_df.append(d_dir+f_name)
-    l_f_df = [l_f, l_df]
-    #print(l_f)
-    #print(l_df)
-    return(l_f_df)
-
-def poly_fit(x, c1, c2, c3):
-    """
-    polynominal fitting
-    """
-    y = c1 + c2*x + c3*np.power(x,2)
-    return(y)
+from sort_files import files_in_dir, sort_var_and_f
+from extraction import extract_etot
+from functions_fit import poly_fit
 
 ################################### Input ############################################
-directory = "/home/likejun/work/hBN/Ti/nonradia/my_template_my_structure"
+directory = "/home/likejun/work/hBN/Ti/supercell_88"
 #dQ = 1.136793832893554 # change of nuclear coordinate
 dQ = 0.6056841293581344
 min_x = -0.4
@@ -105,9 +63,8 @@ for i in range(len(set_etot)):
         sec_min_etot = min(set_etot[i])
     if max(set_etot[i]) - max_etot < 0.0:
         sec_max_etot = max(set_etot[i])
-        print(sec_max_etot, max_etot)
-E_zpl = float(format(sec_min_etot - min_etot, ".3f"))
-E_rel = float(format(sec_max_etot - min_etot, ".3f"))
+E_zpl = float(format(sec_min_etot - min_etot, ".5f"))
+E_rel = float(format(sec_max_etot - min_etot, ".5f"))
 print("The ZPL is {} eV".format(E_zpl, E_rel))
 print("The energy of gs in es geometry is {} eV".format(E_rel))
 

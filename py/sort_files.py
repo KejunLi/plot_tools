@@ -6,6 +6,7 @@ import re
 # d_dir stands for destinated directory
 # f_name for name of a file
 # l_f for list of files
+# l_df for list of directory + file name
 # l_var for list of variable
 # l_dvar for list of dependent variable
 # s_var for sorted variable
@@ -13,16 +14,22 @@ import re
 # sl_dvar for sorted list of dependent variable
 ####################################################
 
-def files_in_dir(d_dir):
+def files_in_dir(d_dir, con_f):
     """
     collect files with satisfactory names in a designated directory
+    objective files should contain con_f in their names
     """
+    d_dir = d_dir + "/"
     l_f = []
+    l_df = []
     for f_name in os.listdir(d_dir):
-        if "nk" in f_name and ".out" in f_name and "" in f_name:
+        if con_f in f_name:
             l_f.append(f_name)
+            l_df.append(d_dir+f_name)
+    l_f_df = [l_f, l_df]
     #print(l_f)
-    return(l_f)
+    #print(l_df)
+    return(l_f_df)
 
 
 def sort_var_and_f(l_f):
@@ -35,7 +42,10 @@ def sort_var_and_f(l_f):
     l_var = []
     for f_name in l_f:
         #raw_var = re.findall(r"[+-]?\d+|[+-]?^\d*\.\d*|0", f_name)
-        raw_var = re.findall(r"\d+\.\d*", f_name)
+        if re.findall(r"\d+\.\d*", f_name):
+            raw_var = re.findall(r"\d+\.\d*", f_name)
+        elif re.findall(r"\d+", f_name):
+            raw_var = re.findall(r"\d+", f_name)
         #print(raw_var)
         var = float(raw_var[0])
         #print(var)
@@ -51,13 +61,5 @@ def sort_var_and_f(l_f):
     # print(sl)
     return(sl)
 
-
-def refine_f(f_name):
-    """
-    refine file name and leave characteristic feature
-    """
-    rf_name = re.findall(r"[q]\d*", f_name)
-    # type(rf_name) == <class 'list'>
-    return(rf_name[0])
 
 
