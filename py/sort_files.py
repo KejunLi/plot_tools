@@ -14,7 +14,7 @@ import re
 # sl_dvar for sorted list of dependent variable
 ####################################################
 
-def files_in_dir(d_dir, con_f):
+def files_in_dir(d_dir, *con_fs):
     """
     collect files with satisfactory names in a designated directory
     objective files should contain con_f in their names
@@ -23,9 +23,10 @@ def files_in_dir(d_dir, con_f):
     l_f = []
     l_df = []
     for f_name in os.listdir(d_dir):
-        if con_f in f_name:
-            l_f.append(f_name)
-            l_df.append(d_dir+f_name)
+        for con_f in con_fs:
+            if con_f in f_name:
+                l_f.append(f_name)
+                l_df.append(d_dir+f_name)
     l_f_df = [l_f, l_df]
     #print(l_f)
     #print(l_df)
