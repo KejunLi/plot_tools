@@ -9,18 +9,21 @@ from scipy.optimize import curve_fit
 from configuration_for_plot import config_plot
 from sort_files import files_in_dir, sort_var_and_f
 from extraction import extract_etot
-from functions_fit import poly_fit
+from fitting import poly_fct, best_vals_of_poly_fct
 
-################################### Input ############################################
-directory = "/home/likejun/work/hBN/Ti/supercell_88"
+################################### Input ####################################################
+directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_yinan_structure"
 dQ = 1.136793832893554 # change of nuclear coordinate
-min_x = -0.4
-max_x = 1.6
-min_y = -0.05
-max_y = 0.6
+min_x = -0.4; max_x = 1.6
+min_y = -0.05; max_y = 0.6
 label = ["TiBN (ex)", "TiBN (gs)"] # label the two curves
 title = "TiBN (Kejun)"
-######################################################################################
+##############################################################################################
+######## Shift the labels of ZPL and E_rel ##############
+############ usually don't need to change ###############
+left_shift_pos_E_zpl = 3
+right_shift_pos_E_rel = 1.2
+#########################################################
 
 # this part looks for all the scf.out files and save in the list for ground state and excited state, respectively.
 dir_lin = []
@@ -49,47 +52,62 @@ for i, d_f in enumerate(dir_f):
     #print(s_ratio, s_dir_f)
     for j in range(len(s_dir_f)):
         nuc_coord.append(s_ratio[j]*dQ)
-        l_etot.append(extract_etot(s_dir_f[j])[0])
+        l_etot.append(extract_etot(s_dir_f[j], "!")[0])
     set_dQ.append(nuc_coord)
     set_etot.append(l_etot)
     #print(min_etot)
 
-# obtain ZPL and E_rel, and preplot
+# obtain ZPL, E_rel, E_abs and E_em, and prepare for plotting
 min_etot = min(min(set_etot[0]), min(set_etot[1]))
 max_etot = max(max(set_etot[0]), max(set_etot[1]))
+sec_min_etot = None
+sec_max_etot = None
+x_of_min_etot = None
+x_of_sec_min_etot = None
 for i in range(len(set_etot)):
+    if min(set_etot[i]) - min_etot == 0.0:
+        for j in range(len(set_etot[i])):
+            if set_etot[i][j] - min_etot == 0.0:
+                x_of_min_etot = set_dQ[i][j]
     if min(set_etot[i]) - min_etot > 0.0:
         sec_min_etot = min(set_etot[i])
+        for j in range(len(set_etot[i])):
+            if set_etot[i][j] - sec_min_etot == 0.0:
+                x_of_sec_min_etot = set_dQ[i][j]
     if max(set_etot[i]) - max_etot < 0.0:
         sec_max_etot = max(set_etot[i])
 E_zpl = float(format(sec_min_etot - min_etot, ".5f"))
 E_rel = float(format(sec_max_etot - min_etot, ".5f"))
-print("The ZPL is {} eV".format(E_zpl, E_rel))
-print("The energy of gs in es geometry is {} eV".format(E_rel))
+E_abs = float(format(max_etot - min_etot, ".5f"))
+E_em = float(format(sec_min_etot - sec_max_etot, ".5f"))
+print("E_zpl = {} eV".format(E_zpl)) # ZPL
+print("E_rel {} eV".format(E_rel)) # The energy of gs in es geometry
+print("E_abs = {} eV".format(E_abs)) # absorption
+print("E_em = {} eV".format(E_em)) # emission
 
 # this part plots
 config_plot()
 color_list = ["tab:blue", "tab:red"]  
-axes = plt.gca()
-ylim = axes.get_ylim()
+#axes = plt.gca()
+#ylim = axes.get_ylim()
 x_offset = 0.1
 y_offset = 0.005
 
 plt.hlines(0.0, min_x, max_x, linestyles="dashed")
 plt.hlines(E_zpl, min_x, max_x, linestyles="dashed")
-plt.vlines(min(set_dQ[0]), -10, 10, linestyles="dashed")
-plt.vlines(max(set_dQ[0]), -10, 10, linestyles="dashed")
-plt.hlines(E_rel, max(set_dQ[0]), max(set_dQ[0])+x_offset, linestyles="solid")
+plt.vlines(x_of_min_etot, -10, 10, linestyles="dashed")
+plt.vlines(x_of_sec_min_etot, -10, 10, linestyles="dashed")
+plt.hlines(E_rel, x_of_sec_min_etot, x_of_sec_min_etot+x_offset, linestyles="dashed")
 
-plt.annotate('', xy=(min(set_dQ[0])-x_offset*2, -y_offset), 
-        xytext=(min(set_dQ[0])-x_offset*2, E_zpl+y_offset),
+plt.annotate('', xy=(x_of_min_etot-x_offset*2, -y_offset), 
+        xytext=(x_of_min_etot-x_offset*2, E_zpl+y_offset),
         arrowprops=dict(arrowstyle="<|-|>", color = "k"))
-plt.annotate('', xy=(max(set_dQ[0])+x_offset, -y_offset),
-        xytext=(max(set_dQ[0])+x_offset, E_rel+y_offset),
+plt.annotate('', xy=(x_of_sec_min_etot+x_offset, -y_offset),
+        xytext=(x_of_sec_min_etot+x_offset, E_rel+y_offset),
         arrowprops=dict(arrowstyle="<|-|>", color = "k"))
 
-plt.text(min(set_dQ[0])-x_offset*3, E_zpl/2.0, "\u0394E")
-plt.text(max(set_dQ[0])+x_offset*1.2, E_rel/2.0, "\u0394E$_{rel}$")
+plt.text(x_of_min_etot-x_offset*left_shift_pos_E_zpl, E_zpl/2.0, "\u0394E")
+plt.text(x_of_sec_min_etot+x_offset*right_shift_pos_E_rel, E_rel/2.0, "\u0394E$_{rel}$")
 for i in range(len(set_etot)):
     if min(set_etot[i]) - min_etot == 0.0:
         plt.text((min_x+max_x)/1.6, E_rel+0.1, label[i])
@@ -98,14 +116,15 @@ for i in range(len(set_etot)):
 
 for i in range(len(set_etot)):
     ################### fit data #######################################################
-    init_vals = [0.5, 0.5, 0.5] # for c1, c2, c3
-    best_vals, covar = curve_fit(poly_fit, set_dQ[i], set_etot[i], p0=init_vals)
-    print("best_vals: {}".format(best_vals))
+    #init_vals = [0.5, 0.5, 0.5] # for c0, c1, c2
+    #best_vals, covar = curve_fit(poly_fit, set_dQ[i], set_etot[i], p0=init_vals)
+    #print("best_vals: {}".format(best_vals))
     ####################################################################################
+    best_vals = best_vals_of_poly_fct(set_dQ[i], set_etot[i])
     x = np.arange(min_x, max_x, 0.001)
     y = []
     for k in range(len(x)):
-        y_temp = poly_fit(x[k], best_vals[0], best_vals[1], best_vals[2]) - min_etot
+        y_temp = poly_fct(x[k], best_vals[0], best_vals[1], best_vals[2]) - min_etot
         y.append(y_temp)
     plt.plot(x, y, linewidth=2, color=color_list[i])
     for j in range(len(set_etot[i])):

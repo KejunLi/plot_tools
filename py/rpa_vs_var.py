@@ -4,22 +4,9 @@ import numpy as np
 import re
 import os
 from sort_files import sort_var_and_f
-from extraction import extract_fn
+from extraction import extract_fn, extract_eps
 from var_color import var_color
 from configuration_for_plot import config_plot
-
-def extract_eps(d_dir, f_name):
-    raw_data = []
-    E = []
-    re_eps = []
-    im_eps = []
-    data_set = []
-    f = str(d_dir)+str(f_name)
-    E = np.loadtxt(f, usecols=(0,))
-    re_eps = np.loadtxt(f, usecols=(2,))
-    im_eps = np.loadtxt(f, usecols=(1,))
-    data_set = [E, re_eps, im_eps, f_name]
-    return(data_set)
 
 def list_files(d_dir):
     f = os.listdir(d_dir)
@@ -38,7 +25,7 @@ def plot_pen(d_dir):
     # print(sl_var, sl_f)
     sl_rf = []
     for f_name in sl_f:
-        rf_name = extract_fn(f_name)
+        rf_name = extract_fn(f_name, "q")
         sl_rf.append(rf_name)
     for i, f_name in enumerate(sl_f):
         data_set = extract_eps(d_dir, f_name)
