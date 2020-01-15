@@ -12,9 +12,9 @@ from extraction import extract_etot
 from fitting import poly_fct, best_vals_of_poly_fct
 
 ################################### Input ####################################################
-directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_yinan_structure"
+directory = "/home/likejun/work/hBN/Ti/supercell_1010/nonradiative/cal_6"
 dQ = 1.136793832893554 # change of nuclear coordinate
-min_x = -0.4; max_x = 1.6
+min_x = -0.4; max_x = 2.0
 min_y = -0.05; max_y = 0.6
 label = ["TiBN (ex)", "TiBN (gs)"] # label the two curves
 title = "TiBN (Kejun)"
@@ -60,22 +60,36 @@ for i, d_f in enumerate(dir_f):
 # obtain ZPL, E_rel, E_abs and E_em, and prepare for plotting
 min_etot = min(min(set_etot[0]), min(set_etot[1]))
 max_etot = max(max(set_etot[0]), max(set_etot[1]))
-sec_min_etot = None
-sec_max_etot = None
+# the minimum total energy in the first excited state
+sec_min_etot = None 
+# the maximum total energy of excited state in the ground state geometry
+# where the ratio of nuclear coordinate change is 1.00
+sec_max_etot = None 
+# the 1D coordinate of the minimum total energy
 x_of_min_etot = None
+# the 1D coordinate of the second minimum total energy
 x_of_sec_min_etot = None
 for i in range(len(set_etot)):
-    if min(set_etot[i]) - min_etot == 0.0:
-        for j in range(len(set_etot[i])):
-            if set_etot[i][j] - min_etot == 0.0:
-                x_of_min_etot = set_dQ[i][j]
     if min(set_etot[i]) - min_etot > 0.0:
         sec_min_etot = min(set_etot[i])
         for j in range(len(set_etot[i])):
             if set_etot[i][j] - sec_min_etot == 0.0:
                 x_of_sec_min_etot = set_dQ[i][j]
-    if max(set_etot[i]) - max_etot < 0.0:
-        sec_max_etot = max(set_etot[i])
+    elif min(set_etot[i]) - min_etot == 0.0:
+        for j in range(len(set_etot[i])):
+            if set_etot[i][j] - min_etot == 0.0:
+                x_of_min_etot = set_dQ[i][j]
+            if set_dQ[i][j] == x_of_sec_min_etot:
+                sec_max_etot = set_etot[i][j]
+
+#    if min(set_etot[i]) - min_etot > 0.0:
+#        sec_min_etot = min(set_etot[i])
+#        for j in range(len(set_etot[i])):
+#            if set_etot[i][j] - sec_min_etot == 0.0:
+#                x_of_sec_min_etot = set_dQ[i][j]
+#     if max(set_etot[i]) - max_etot < 0.0:
+#         sec_max_etot = max(set_etot[i])
+
 E_zpl = float(format(sec_min_etot - min_etot, ".5f"))
 E_rel = float(format(sec_max_etot - min_etot, ".5f"))
 E_abs = float(format(max_etot - min_etot, ".5f"))
