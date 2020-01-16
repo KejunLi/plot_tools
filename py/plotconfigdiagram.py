@@ -12,7 +12,7 @@ from extraction import extract_etot
 from fitting import poly_fct, best_vals_of_poly_fct
 
 ################################### Input ####################################################
-directory = "/home/KEJUNLI/work/hBN/Ti/supercell_1010/nonradiative/cal_7"
+directory = "/home/KEJUNLI/work/hBN/Ti/supercell_1010/nonradiative/cal_6"
 dQ = 1.2911782126728621 # change of nuclear coordinate
 min_x = -0.4; max_x = 2.0
 min_y = -0.05; max_y = 0.6
@@ -95,7 +95,6 @@ print("E_em = {} eV".format(E_em)) # emission
 
 # this part plots
 config_plot()
-color_list = ["tab:blue", "tab:red"]  
 #axes = plt.gca()
 #ylim = axes.get_ylim()
 x_offset = 0.1
@@ -129,11 +128,16 @@ for i in range(len(set_etot)):
     for k in range(len(x)):
         y_temp = poly_fct(x[k], best_vals[0], best_vals[1], best_vals[2]) - min_etot
         y.append(y_temp)
-    plt.plot(x, y, linewidth=2, color=color_list[i])
+    if min(set_etot[i]) - min_etot == 0.0:
+        plt.plot(x, y, linewidth=2, color="tab:blue")
+    elif min(set_etot[i]) - sec_min_etot == 0.0:
+        plt.plot(x, y, linewidth=2, color="tab:red")
     for j in range(len(set_etot[i])):
         etot = set_etot[i][j]-min_etot
-        # print(etot)
-        plt.plot(set_dQ[i][j], etot, marker="o", markersize=6, markerfacecolor="w", color=color_list[i])
+        if min(set_etot[i]) - min_etot == 0.0:
+            plt.plot(set_dQ[i][j], etot, marker="o", markersize=6, markerfacecolor="w", color="tab:blue")
+        elif min(set_etot[i]) - sec_min_etot == 0.0:
+            plt.plot(set_dQ[i][j], etot, marker="o", markersize=6, markerfacecolor="w", color="tab:red")
 
 plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
 plt.ylabel("E (eV)")
