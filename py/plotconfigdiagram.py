@@ -12,12 +12,12 @@ from extraction import extract_etot
 from fitting import poly_fct, best_vals_of_poly_fct
 
 ################################### Input ####################################################
-directory = "/home/likejun/work/hBN/Ti/supercell_1010/nonradiative/cal_6"
-dQ = 1.136793832893554 # change of nuclear coordinate
+directory = "/home/KEJUNLI/work/hBN/Ti/supercell_1010/nonradiative/cal_7"
+dQ = 1.2911782126728621 # change of nuclear coordinate
 min_x = -0.4; max_x = 2.0
 min_y = -0.05; max_y = 0.6
-label = ["TiBN (ex)", "TiBN (gs)"] # label the two curves
-title = "TiBN (Kejun)"
+label = ["TiBN (gs)", "TiBN (ex)"] # label the two curves
+title = "TiBN_10x10 (kejun)"
 ##############################################################################################
 ######## Shift the labels of ZPL and E_rel ##############
 ############ usually don't need to change ###############
@@ -75,20 +75,14 @@ for i in range(len(set_etot)):
         for j in range(len(set_etot[i])):
             if set_etot[i][j] - sec_min_etot == 0.0:
                 x_of_sec_min_etot = set_dQ[i][j]
-    elif min(set_etot[i]) - min_etot == 0.0:
+for i in range(len(set_etot)):  
+    if min(set_etot[i]) - min_etot == 0.0:
         for j in range(len(set_etot[i])):
             if set_etot[i][j] - min_etot == 0.0:
                 x_of_min_etot = set_dQ[i][j]
-            if set_dQ[i][j] == x_of_sec_min_etot:
+            if set_dQ[i][j] - x_of_sec_min_etot == 0.0:
                 sec_max_etot = set_etot[i][j]
 
-#    if min(set_etot[i]) - min_etot > 0.0:
-#        sec_min_etot = min(set_etot[i])
-#        for j in range(len(set_etot[i])):
-#            if set_etot[i][j] - sec_min_etot == 0.0:
-#                x_of_sec_min_etot = set_dQ[i][j]
-#     if max(set_etot[i]) - max_etot < 0.0:
-#         sec_max_etot = max(set_etot[i])
 
 E_zpl = float(format(sec_min_etot - min_etot, ".5f"))
 E_rel = float(format(sec_max_etot - min_etot, ".5f"))
@@ -129,11 +123,6 @@ for i in range(len(set_etot)):
         plt.text((min_x+max_x)/1.6, E_zpl-0.1, label[i])
 
 for i in range(len(set_etot)):
-    ################### fit data #######################################################
-    #init_vals = [0.5, 0.5, 0.5] # for c0, c1, c2
-    #best_vals, covar = curve_fit(poly_fit, set_dQ[i], set_etot[i], p0=init_vals)
-    #print("best_vals: {}".format(best_vals))
-    ####################################################################################
     best_vals = best_vals_of_poly_fct(set_dQ[i], set_etot[i])
     x = np.arange(min_x, max_x, 0.001)
     y = []
