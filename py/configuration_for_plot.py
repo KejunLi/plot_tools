@@ -17,11 +17,10 @@ def config_plot():
     plt.rc('ytick', labelsize=MIDDLE_SIZE)    # fontsize of the tick labels
     plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-    
+
     # figure size
-    plt.figure(num=1, figsize=(10,7.5), dpi=120, facecolor='w', edgecolor='k')
+    plt.figure(num=None, figsize=(10,7.5), dpi=120, facecolor='w', edgecolor='k')
 
     # make y-axis into scientific notation, for more options go to the following website
     # https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.axes.Axes.ticklabel_format.html
     # plt.ticklabel_format(axis='y', style='plain', scilimits=(0,0), useOffset=None, useMathText=True)
-

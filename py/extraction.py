@@ -133,7 +133,7 @@ def extract_aps(dir_f):
                 got_all_atompos = True
             elif not got_all_atompos:
                 # print(line)
-                print(l_raw_atom_atompos)
+                #print(l_raw_atom_atompos)
                 atom_name = l_raw_atom_atompos[0]
                 x = float(l_raw_atom_atompos[1])
                 y = float(l_raw_atom_atompos[2])
@@ -145,5 +145,5 @@ def extract_aps(dir_f):
                 l_atom.append(atom_name)
     l_atom_atompos.append(l_atom)
     l_atom_atompos.append(l_atompos)
-    print(l_atom_atompos)
+    #print(l_atom_atompos)
     return(l_atom_atompos)
