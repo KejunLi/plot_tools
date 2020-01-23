@@ -9,14 +9,24 @@ from sort_files import files_in_dir, sort_var_and_f
 from extraction import extract_aps
 
 ################################### Input ######################################
-#directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_my_structure"
-#directory = "/home/likejun/work/hBN/Ti/supercell_1010/nonradiative/cal_7"
-directory = "/home/likejun/work/hBN/Ti/supercell_88/nonradiative"
 filename = "scf.in"
+directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_yinan_structure"
 # edges of unit cell
-a = 25.072884475
-b = 25.072884475
+a = 15.043730685
+b = 15.043730685
 c = 21.167089904
+#directory = "/home/likejun/work/hBN/Ti/supercell_88/nonradiative"
+#a = 20.058309104
+#b = 20.058309104
+#c = 21.167089904
+#directory = "/home/likejun/work/hBN/Ti/supercell_1010/nonradiative/cal_7"
+#a = 25.072884475
+#b = 25.072884475
+#c = 21.167089904
+view_direction = "full_view"
+view_direction = "front_view"
+view_direction = "top_view"
+view_direction = "left_view"
 ################################################################################
 #config_plot()
 # this part looks for all the scf.out files and save in the list
@@ -133,8 +143,10 @@ for i in range(len(set_atompos)):
                     set_dQ.append(dQ)
                     set_atom_mass.append(mass_Ti)
                 set_all.append([x0, y0, dQ])
-
-            view_3d(set_x0, set_y0, set_dQ, "full_view", sl_ratio[j])
+            if j == 0:
+                view_3d(set_x0, set_y0, set_dQ, view_direction, sl_ratio[j])
+            elif j == 12:
+                view_3d(set_x0, set_y0, set_dQ, view_direction, sl_ratio[j])
             #fig = plt.figure(num=None, figsize=(10, 7.5), dpi=200,
             #        facecolor='w', edgecolor='k')
             #ax2 = fig.add_subplot(1,1,1)
