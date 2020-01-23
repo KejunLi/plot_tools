@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import scipy as sp
+import scipy.interpolate
 import matplotlib.pyplot as plt
 from configuration_for_plot import config_plot
 from sort_files import files_in_dir, sort_var_and_f
 from extraction import extract_aps
+from fitting import interpolate
 
 ################################### Input ######################################
-directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_my_structure"
+directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_yinan_structure"
 filename = "scf.in"
 # edges of unit cell
 a = 25.072884475
@@ -24,7 +27,6 @@ set_dir_f = []
 l_dir_lin = files_in_dir(directory, "lin")[1]
 for dir_lin in l_dir_lin:
     l_dir_ratio.append(files_in_dir(dir_lin, "ratio-")[1])
-# print(dir_ratio)
 for dir_ratio in l_dir_ratio:
     l_dir_f_temp = []
     for dir_ratio_i in dir_ratio:
@@ -37,24 +39,17 @@ set_atom = []
 for i, l_dir_f in enumerate(set_dir_f):
     sl_ratio = sort_var_and_f(l_dir_f)[0]
     sl_dir_f = sort_var_and_f(l_dir_f)[1]
-    # print(s_dir_f)
     ith_set_atompos = []
     ith_set_atom = []
     for j in range(len(sl_dir_f)):
-        #l_atom = []
-        #l_atompos = []
-        #print(s_dir_f[j])
         l_atom = extract_aps(sl_dir_f[j])[0]
         l_atompos = extract_aps(sl_dir_f[j])[1]
         ith_set_atom.append(l_atom)
         ith_set_atompos.append(l_atompos)
     set_atom.append(ith_set_atom)
     set_atompos.append(ith_set_atompos)
-print(set_atompos)
 
-# this fig is used when to do subplot
-fig = plt.figure(num=None, figsize=(16, 12), dpi=120,
-        facecolor='w', edgecolor='k')
+
 for i in range(len(set_atompos)):
     if "gs" in set_dir_f[i][0]:
         for j in range(len(set_atompos[i])):
@@ -77,6 +72,8 @@ for i in range(len(set_atompos)):
             set_dy = []
             set_dz = []
             set_dQ = []
+            set_atom_mass = []
+            set_all = []
             for k in range(len(set_atompos[i][j])):
                 # fractional crystal coordinates
                 u0 = float(set_atompos[i][0][k][0])
@@ -117,50 +114,77 @@ for i in range(len(set_atompos)):
                 set_zi.append(zi)
                 set_dz.append(dz)
                 if set_atom[i][j][k] == "B":
+                    mass_B = 10.81
                     dQ = np.sqrt(np.power(dx,2) + np.power(dy,2) + \
-                    np.power(dz,2)) * np.sqrt(10.81)
+                    np.power(dz,2)) * np.sqrt(mass_B)
                     set_dQ.append(dQ)
+                    set_atom_mass.append(mass_B)
                 elif set_atom[i][j][k] == "N":
+                    mass_N = 14.01
                     dQ = np.sqrt(np.power(dx,2) + np.power(dy,2) + \
-                    np.power(dz,2)) * np.sqrt(14.01)
+                    np.power(dz,2)) * np.sqrt(mass_N)
                     set_dQ.append(dQ)
+                    set_atom_mass.append(mass_N)
                 elif set_atom[i][j][k] == "Ti":
+                    mass_Ti = 47.87
                     dQ = np.sqrt(np.power(dx,2) + np.power(dy,2) + \
-                    np.power(dz,2)) * np.sqrt(47.87)
+                    np.power(dz,2)) * np.sqrt(mass_Ti)
                     set_dQ.append(dQ)
+                    set_atom_mass.append(mass_Ti)
+                set_all.append([x0, y0, dQ])
 
-            # this fig is used when to do single plot
-            #fig = plt.figure(num=None, figsize=(10, 7.5), dpi=120,
-            #        facecolor='w', edgecolor='k')
-            #ax = fig.add_subplot(1,1,1, projection="3d")
 
-            # this ax is for subplots
-            ax = fig.add_subplot(4,4,j+1, projection="3d")
+            fig = plt.figure(num=None, figsize=(10, 7.5), dpi=200,
+                    facecolor='w', edgecolor='k')
+            #ax2 = fig.add_subplot(1,1,1)
+            ax3 = fig.add_subplot(1,1,1, projection="3d")
 
             # this plots dQ vs xy
-            ax.scatter(set_x0, set_y0, set_dQ, zdir="z", s=20, c=None)
-            ax.plot_trisurf(set_x0, set_y0, set_dQ, linewidth=0.2,
-                    antialiased=True, cmap=plt.cm.Spectral)
-            ax.set_zlim(0, 0.5)
+            ax3.scatter(set_x0, set_y0, set_dQ, zdir="z", s=20, c=None)
+            surf = ax3.plot_trisurf(set_x0, set_y0, set_dQ, linewidth=0.2,
+                    antialiased=True, cmap=plt.cm.viridis, alpha=0.6)
+
+            #ax3.view_init(azim=-90, elev=0)
+            #ax3.w_xaxis.line.set_lw(0.)
+            #ax3.set_xticks([])
+            ax3.set_xlabel("x ($\AA$)")
+
+            #ax3.view_init(azim=-180, elev=0)
+            #ax3.w_yaxis.line.set_lw(0.)
+            #ax3.set_yticks([])
+            ax3.set_ylabel("y ($\AA$)")
+
+            #ax3.view_init(azim=-90, elev=90)
+            #ax3.w_zaxis.line.set_lw(0.)
+            #ax3.set_zticks([])
+            ax3.set_zlabel("\u0394Q (amu$^{1/2}$$\AA$)")
+            #ax3.set_zlabel("z ($\AA$)")
+
+            ax3.set_zlim(0,0.5)
+            #ax2.imshow(set_all)
+
+            fig.colorbar(surf)
+            #fig.colorbar(surf, boundaries=np.linspace(0, 0.5))
 
             # this plots z vs xy
-            #ax.scatter(set_xi, set_yi, set_zi, zdir="z", s=20, c=None)
-            #ax.plot_trisurf(set_xi, set_yi, set_zi, linewidth=0.2,
+            #ax3.scatter(set_xi, set_yi, set_zi, zdir="z", s=20, c=None)
+            #ax3.plot_trisurf(set_xi, set_yi, set_zi, linewidth=0.2,
             #        antialiased=True, cmap=plt.cm.Spectral)
 
             # this plots direction of dQ
-            #ax.quiver(set_xi, set_yi, set_zi, set_dx, set_dy, set_dz,
+            #ax3.scatter(set_xi, set_yi, set_zi, zdir="z", s=20, c=None)
+            #ax3.quiver(set_xi, set_yi, set_zi, set_dx, set_dy, set_dz,
             #        length=0.4, linewidths=1.2, normalize=True)
 
 
-            ax.set_xlabel("x ($\AA$)")
-            ax.set_ylabel("y ($\AA$)")
-            #ax.set_zlabel("z ($\AA$)")
-            ax.set_zlabel("\u0394Q (amu$^{1/2}$$\AA$)")
+
+
+
+
 
             # short title for subplots
-            ax.set_title("{}".format(sl_ratio[j]))
+            #ax3.set_title("{}".format(sl_ratio[j]))
 
             # long title for single plot
-            #ax.set_title("Linear extrapolation ratio = {}".format(sl_ratio[j]))
+            ax3.set_title("Linear extrapolation ratio = {}".format(sl_ratio[j]))
 plt.show()
