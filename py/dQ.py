@@ -4,13 +4,14 @@ import numpy as np
 import scipy as sp
 import scipy.interpolate
 import matplotlib.pyplot as plt
-from configuration_for_plot import config_plot
+from configuration_for_plot import config_plot, view_3d
 from sort_files import files_in_dir, sort_var_and_f
 from extraction import extract_aps
-from fitting import interpolate
 
 ################################### Input ######################################
-directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_yinan_structure"
+#directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_my_structure"
+#directory = "/home/likejun/work/hBN/Ti/supercell_1010/nonradiative/cal_7"
+directory = "/home/likejun/work/hBN/Ti/supercell_88/nonradiative"
 filename = "scf.in"
 # edges of unit cell
 a = 25.072884475
@@ -133,37 +134,37 @@ for i in range(len(set_atompos)):
                     set_atom_mass.append(mass_Ti)
                 set_all.append([x0, y0, dQ])
 
-
-            fig = plt.figure(num=None, figsize=(10, 7.5), dpi=200,
-                    facecolor='w', edgecolor='k')
+            view_3d(set_x0, set_y0, set_dQ, "full_view", sl_ratio[j])
+            #fig = plt.figure(num=None, figsize=(10, 7.5), dpi=200,
+            #        facecolor='w', edgecolor='k')
             #ax2 = fig.add_subplot(1,1,1)
-            ax3 = fig.add_subplot(1,1,1, projection="3d")
+            #ax3 = fig.add_subplot(1,1,1, projection="3d")
 
             # this plots dQ vs xy
-            ax3.scatter(set_x0, set_y0, set_dQ, zdir="z", s=20, c=None)
-            surf = ax3.plot_trisurf(set_x0, set_y0, set_dQ, linewidth=0.2,
-                    antialiased=True, cmap=plt.cm.viridis, alpha=0.6)
+            #ax3.scatter(set_x0, set_y0, set_dQ, zdir="z", s=20, c=None)
+            #surf = ax3.plot_trisurf(set_x0, set_y0, set_dQ, linewidth=0.2,
+            #        antialiased=True, cmap=plt.cm.viridis, alpha=0.6)
 
             #ax3.view_init(azim=-90, elev=0)
             #ax3.w_xaxis.line.set_lw(0.)
             #ax3.set_xticks([])
-            ax3.set_xlabel("x ($\AA$)")
+            #ax3.set_xlabel("x ($\AA$)")
 
             #ax3.view_init(azim=-180, elev=0)
             #ax3.w_yaxis.line.set_lw(0.)
             #ax3.set_yticks([])
-            ax3.set_ylabel("y ($\AA$)")
+            #ax3.set_ylabel("y ($\AA$)")
 
             #ax3.view_init(azim=-90, elev=90)
             #ax3.w_zaxis.line.set_lw(0.)
             #ax3.set_zticks([])
-            ax3.set_zlabel("\u0394Q (amu$^{1/2}$$\AA$)")
+            #ax3.set_zlabel("\u0394Q (amu$^{1/2}$$\AA$)")
             #ax3.set_zlabel("z ($\AA$)")
 
-            ax3.set_zlim(0,0.5)
+            #ax3.set_zlim(0,0.5)
             #ax2.imshow(set_all)
 
-            fig.colorbar(surf)
+            #fig.colorbar(surf)
             #fig.colorbar(surf, boundaries=np.linspace(0, 0.5))
 
             # this plots z vs xy
@@ -186,5 +187,5 @@ for i in range(len(set_atompos)):
             #ax3.set_title("{}".format(sl_ratio[j]))
 
             # long title for single plot
-            ax3.set_title("Linear extrapolation ratio = {}".format(sl_ratio[j]))
+            #ax3.set_title("Linear extrapolation ratio = {}".format(sl_ratio[j]))
 plt.show()
