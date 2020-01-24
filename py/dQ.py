@@ -10,12 +10,12 @@ from extraction import extract_aps
 
 ################################### Input ######################################
 filename = "scf.in"
-directory = "/home/likejun/work/hBN/Ti/supercell_66/nonradia/my_template_yinan_structure"
+directory = "/home/likejun/work/hBN/Mo/supercell_66/nonradiative/yinan"
 # edges of unit cell
 a = 15.043730685
 b = 15.043730685
 c = 21.167089904
-#directory = "/home/likejun/work/hBN/Ti/supercell_88/nonradiative"
+#directory = "/home/likejun/work/hBN/Mo/supercell_88/cal_1"
 #a = 20.058309104
 #b = 20.058309104
 #c = 21.167089904
@@ -23,10 +23,10 @@ c = 21.167089904
 #a = 25.072884475
 #b = 25.072884475
 #c = 21.167089904
-view_direction = "full_view"
+#view_direction = "full_view"
 view_direction = "front_view"
-view_direction = "top_view"
-view_direction = "left_view"
+#view_direction = "top_view"
+#view_direction = "left_view"
 ################################################################################
 #config_plot()
 # this part looks for all the scf.out files and save in the list
@@ -125,23 +125,24 @@ for i in range(len(set_atompos)):
                 set_zi.append(zi)
                 set_dz.append(dz)
                 if set_atom[i][j][k] == "B":
-                    mass_B = 10.81
+                    atom_mass1 = 10.81
                     dQ = np.sqrt(np.power(dx,2) + np.power(dy,2) + \
-                    np.power(dz,2)) * np.sqrt(mass_B)
+                    np.power(dz,2)) * np.sqrt(atom_mass1)
                     set_dQ.append(dQ)
-                    set_atom_mass.append(mass_B)
+                    set_atom_mass.append(atom_mass1)
                 elif set_atom[i][j][k] == "N":
-                    mass_N = 14.01
+                    atom_mass2 = 14.01
                     dQ = np.sqrt(np.power(dx,2) + np.power(dy,2) + \
-                    np.power(dz,2)) * np.sqrt(mass_N)
+                    np.power(dz,2)) * np.sqrt(atom_mass2)
                     set_dQ.append(dQ)
-                    set_atom_mass.append(mass_N)
-                elif set_atom[i][j][k] == "Ti":
-                    mass_Ti = 47.87
+                    set_atom_mass.append(atom_mass2)
+                elif set_atom[i][j][k] == "Mo":
+                    #atom_mass3 = 47.87
+                    atom_mass3 = 95.94
                     dQ = np.sqrt(np.power(dx,2) + np.power(dy,2) + \
-                    np.power(dz,2)) * np.sqrt(mass_Ti)
+                    np.power(dz,2)) * np.sqrt(atom_mass3)
                     set_dQ.append(dQ)
-                    set_atom_mass.append(mass_Ti)
+                    set_atom_mass.append(atom_mass3)
                 set_all.append([x0, y0, dQ])
             if j == 0:
                 view_3d(set_x0, set_y0, set_dQ, view_direction, sl_ratio[j])
