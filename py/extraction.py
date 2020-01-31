@@ -3,7 +3,7 @@ import re
 import numpy as np
 
 
-def extract_fn(f_name, condition):
+def extract_filename(f_name, condition):
     """
     read file name and extract characteristic feature in file name
     output is a list
@@ -49,7 +49,8 @@ def extract_etot(dir_f, *conditions):
 def extract_eps(dir_f):
     """
     this function read eps file with input of directory and file name
-    sequentially output the lists of photon energy, Re(eps), Im(eps), and directory+file name
+    sequentially output the lists of photon energy, Re(eps), Im(eps),
+    and directory+file name
     output is an array which contains three lists
     data_set = [E, re_eps, im_eps]
     E = [E1, E2, E3, ...]
@@ -97,8 +98,8 @@ def extract_aps(dir_f):
     l_atom = [atom1, atom2, atom3, ...]
     l_atompos = [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3], ...]
     """
-    found_atompos = False
-    got_all_atompos = False
+    isfound_atompos = False
+    isgot_all_atompos = False
     i=0
     with open(dir_f, "r") as f:
         lines = f.readlines()
@@ -119,19 +120,18 @@ def extract_aps(dir_f):
                 continue
             else:
                 continue
-        elif counts == 1 and not found_atompos:
+        elif counts == 1 and not isfound_atompos:
             if "ATOMIC_POSITIONS" not in line:
                 i += 1
-                # print(found_ap, i)
                 continue
             elif "ATOMIC_POSITIONS" in line:
-                found_atompos = True
+                isfound_atompos = True
                 continue
-        if found_atompos:
+        if isfound_atompos:
             l_raw_atom_atompos = line.strip("\n").split()
             if len(l_raw_atom_atompos) != 4:
-                got_all_atompos = True
-            elif not got_all_atompos:
+                isgot_all_atompos = True
+            elif not isgot_all_atompos:
                 # print(line)
                 #print(l_raw_atom_atompos)
                 atom_name = l_raw_atom_atompos[0]
@@ -147,3 +147,123 @@ def extract_aps(dir_f):
     l_atom_atompos.append(l_atompos)
     #print(l_atom_atompos)
     return(l_atom_atompos)
+
+def extract_eigenenergy():
+    """
+    this function is used to extract eigenenergy and occupations
+    near valence band maximum (VBM) and conduction band minimum (CBM)
+    return:
+    l_all = [l_E_spinup, l_E_spindown, l_occ_spinup, l_occ_spindown]
+    type(l_E_spinup) = array
+    type(l_E_spindown) = array
+    type(l_occ_spinup) = array
+    type(l_occ_spindown) = array
+    """
+    isfound_E_spinup = False
+    isfound_E_spindown = False
+    isfound_kb_spinup = False
+    isfound_kb_spindown = False
+    is_occ_spinup = False
+    is_occ_spindown = False
+    got_E_spinup = int(0)
+    got_E_spindown = int(0)
+    got_occ_spinup = int(0)
+    got_occ_spindown = int(0)
+    l_all = []
+    l_E_spinup = []
+    l_E_spindown = []
+    l_occ_spinup = []
+    l_occ_spindown = []
+    counts = int(0)
+    with open(dir_f, "r") as f:
+        lines = f.readlines()
+    for line in lines:
+        if "SPIN UP" in line:
+            counts += 1
+    num_spinup = counts
+    num_spindown = counts
+    # print(counts)
+    # collect spinup eigenenergies
+    for line in lines:
+        l_raw_E_spinup = []
+        if num_spinup > 1:
+            if "SPIN UP" in line:
+                num_spinup -= 1
+                continue
+            else:
+                continue
+        elif num_spinup == 1 and not isfound_E_spinup:
+            if "SPIN UP" not in line:
+                continue
+            elif "SPIN UP" in line:
+                isfound_E_spinup = True
+                continue
+        elif isfound_E_spinup:
+            if "k = " not in line and not isfound_kb_spinup:
+                continue
+            elif "k = " in line and not isfound_kb_spinup:
+                isfound_kb_spinup = True
+                continue
+            if isfound_kb_spinup and not line.split():
+                if not got_E_spinup:
+                    continue
+                elif got_E_spinup and not got_occ_spinup:
+                    is_occ_spinup = True
+                    continue
+                else:
+                    break
+            elif isfound_kb_spinup and line.split() and not is_occ_spinup:
+                l_raw_E_spinup = line.strip("\n").split()
+                got_E_spinup += len(l_raw_E_spinup)
+                l_E_spinup.append(np.array(l_raw_E_spinup))
+            elif is_occ_spinup and line.split():
+                if len(line.split()) != 8:
+                    continue
+                else:
+                    l_occ_spinup.append(np.array(line.split()))
+                    got_occ_spinup += len(line.split())
+
+    # collect spindown eigenenergies
+    for line in lines:
+        l_raw_E_spindown = []
+        if num_spindown > 1:
+            if "SPIN DOWN" in line:
+                num_spindown -= 1
+                continue
+            else:
+                continue
+        elif num_spindown == 1 and not isfound_E_spindown:
+            if "SPIN DOWN" not in line:
+                continue
+            elif "SPIN DOWN" in line:
+                isfound_E_spindown = True
+                continue
+        elif isfound_E_spindown:
+            if "k = " not in line and not isfound_kb_spindown:
+                continue
+            elif "k = " in line and not isfound_kb_spindown:
+                isfound_kb_spindown = True
+                continue
+            if isfound_kb_spindown and not line.split():
+                if not got_E_spindown:
+                    continue
+                elif got_E_spindown and not got_occ_spindown:
+                    is_occ_spindown = True
+                    continue
+                else:
+                    break
+            elif isfound_kb_spindown and line.split() and not is_occ_spindown:
+                l_raw_E_spindown = line.strip("\n").split()
+                got_E_spindown += len(l_raw_E_spindown)
+                l_E_spindown.append(np.array(l_raw_E_spindown))
+            elif is_occ_spindown and line.split():
+                if len(line.split()) != 8:
+                    continue
+                else:
+                    l_occ_spindown.append(np.array(line.split()))
+                    got_occ_spindown += len(line.split())
+    l_all.append(l_E_spinup)
+    l_all.append(l_E_spindown)
+    l_all.append(l_occ_spinup)
+    l_all.append(l_occ_spindown)
+    return(l_all)

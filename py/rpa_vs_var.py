@@ -4,7 +4,7 @@ import numpy as np
 import re
 import os
 from sort_files import sort_var_and_f
-from extraction import extract_fn, extract_eps
+from extraction import extract_filename, extract_eps
 from var_color import var_color
 from configuration_for_plot import config_plot
 
@@ -25,7 +25,7 @@ def plot_pen(d_dir):
     # print(sl_var, sl_f)
     sl_rf = []
     for f_name in sl_f:
-        rf_name = extract_fn(f_name, "q")
+        rf_name = extract_filename(f_name, "q")
         sl_rf.append(rf_name)
     for i, f_name in enumerate(sl_f):
         data_set = extract_eps(d_dir, f_name)
@@ -43,5 +43,3 @@ def plot_pen(d_dir):
 config_plot()
 destination = "/home/likejun/work/hBN/Mo/rpa/dnk_3/"
 plot_pen(destination)
-
-

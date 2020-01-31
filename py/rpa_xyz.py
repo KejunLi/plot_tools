@@ -28,4 +28,3 @@ plt.xlabel("E (eV)")
 plt.title("TiBN_6x6_nk3_rps1")
 plt.ylabel("Im(${\u03B5}$)")
 plt.show()
-

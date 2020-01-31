@@ -2,7 +2,6 @@
 
 import matplotlib.pyplot as plt
 import numpy as np 
-import scipy as spy
 import pylab as ply
 import argparse
 import sys

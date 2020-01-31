@@ -5,11 +5,10 @@ import pylab as ply
 import numpy as np
 import re
 import os
-from scipy.optimize import curve_fit
 from configuration_for_plot import config_plot
 from sort_files import files_in_dir, sort_var_and_f
 from extraction import extract_etot
-from fitting import poly_fct, best_vals_of_poly_fct
+from fitting import quadratic_fct, best_vals_of_quadratic_fct
 
 ################################### Input ######################################
 directory = "/home/likejun/work/hBN/nbvn/nonradiative"
@@ -28,34 +27,34 @@ right_shift_pos_E_rel = 1.2
 
 # this part looks for all the scf.out files and save in the list
 # for ground state and excited state, respectively.
-dir_lin = []
-dir_ratio = []
-dir_f = []
-dir_lin = files_in_dir(directory, "lin")[1]
-for d_lin in dir_lin:
-    dir_ratio.append(files_in_dir(d_lin, "ratio-")[1])
+l_dir_lin = []
+l_dir_ratio = []
+set_dir_f = []
+l_dir_lin = files_in_dir(directory, "lin")[1]
+for dir_lin in l_dir_lin:
+    l_dir_ratio.append(files_in_dir(dir_lin, "ratio-")[1])
 # print(dir_ratio)
-for d_ratio in dir_ratio:
-    dir_f_temp = []
-    for d_rat in d_ratio:
-        dir_f_temp.append(files_in_dir(d_rat, "scf.out")[1][0])
-    dir_f.append(dir_f_temp)
+for dir_ratio in l_dir_ratio:
+    l_dir_f_temp = []
+    for dir_ratio_i in dir_ratio:
+        l_dir_f_temp.append(files_in_dir(dir_ratio_i, "scf.out")[1][0])
+    set_dir_f.append(l_dir_f_temp)
 # print(dir_f)
 
 # this part refines the scf.out files and extracts
 # the ratio of linear extrapolation and corresponding total energies
 set_etot = []
 set_dQ = [] # nuclear coordinate
-for i, d_f in enumerate(dir_f):
+for i, l_dir_f in enumerate(set_dir_f):
     #print(d_f)
     l_etot = []
     nuc_coord = [] # nuclear coordinate
-    s_ratio = sort_var_and_f(d_f)[0]
-    s_dir_f = sort_var_and_f(d_f)[1]
+    sl_ratio = sort_var_and_f(l_dir_f)[0]
+    sl_dir_f = sort_var_and_f(l_dir_f)[1]
     #print(s_ratio, s_dir_f)
-    for j in range(len(s_dir_f)):
-        nuc_coord.append(s_ratio[j]*dQ)
-        l_etot.append(extract_etot(s_dir_f[j], "!")[0])
+    for j in range(len(sl_dir_f)):
+        nuc_coord.append(sl_ratio[j]*dQ)
+        l_etot.append(extract_etot(sl_dir_f[j], "!")[0])
     set_dQ.append(nuc_coord)
     set_etot.append(l_etot)
     #print(min_etot)
@@ -127,12 +126,12 @@ for i in range(len(set_etot)):
         plt.text((min_x+max_x)/2.0+shift_label, E_zpl-0.1, label[i])
 
 for i in range(len(set_etot)):
-    best_vals = best_vals_of_poly_fct(set_dQ[i], set_etot[i])
+    best_vals = best_vals_of_quadratic_fct(set_dQ[i], set_etot[i])
     x = np.arange(min_x, max_x, 0.001)
     y = []
     for k in range(len(x)):
-        y_temp = poly_fct(x[k], best_vals[0], best_vals[1], best_vals[2]) - \
-        min_etot
+        y_temp = quadratic_fct(x[k], best_vals[0], best_vals[1], best_vals[2])\
+         - min_etot
         y.append(y_temp)
     if min(set_etot[i]) - min_etot == 0.0:
         plt.plot(x, y, linewidth=2, color="tab:blue")

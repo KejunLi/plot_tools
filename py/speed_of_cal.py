@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sort_files import files_in_dir, sort_var_and_f
-from extraction import extract_time, extract_fn
+from extraction import extract_time, extract_filename
 from configuration_for_plot import config_plot
 from fitting import lin_fct, best_vals_of_lin_fct
 
@@ -38,7 +38,7 @@ for i, dir_f in enumerate(sl_dir_f):
     best_vals = best_vals_of_lin_fct(l_iteration, l_cpu_time)
     speed = 1.0/best_vals[1] # speed of calculation
     l_speed.append(speed)
-    num_nodes = extract_fn(sl_f[i], "nodes")[1]
+    num_nodes = extract_filename(sl_f[i], "nodes")[1]
     l_num_nodes.append(num_nodes)
     if type_of_diagram == "time_vs_iteration":
         for j, iteration in enumerate(l_iteration):
@@ -46,7 +46,7 @@ for i, dir_f in enumerate(sl_dir_f):
         for xi in x:
             yi = lin_fct(xi, best_vals[0], best_vals[1])
             y.append(yi)
-        plt.plot(x, y, label=extract_fn(sl_f[i], "nodes")[2])
+        plt.plot(x, y, label=extract_filename(sl_f[i], "nodes")[2])
         plt.legend(loc="upper left")
         plt.xlabel("Number of iteration")
         plt.ylabel("CPU time (s)")
@@ -57,10 +57,10 @@ for i, dir_f in enumerate(sl_dir_f):
 #        plt.xlabel("Number of nodes")
 #        plt.ylabel("Calculation speed (iterations/s)")
 if type_of_diagram == "speed_vs_nodes":
-    plt.plot(l_num_nodes, l_speed, color="tab:blue")   
+    plt.plot(l_num_nodes, l_speed, color="tab:blue")
     for i, speedi in enumerate(l_speed):
-        plt.plot(extract_fn(sl_f[i], "nodes")[1], speedi, marker="o", markersize=8, 
-                markerfacecolor="white", color="tab:green")
+        plt.plot(extract_fn(sl_f[i], "nodes")[1], speedi, marker="o",
+                markersize=8, markerfacecolor="white", color="tab:green")
     plt.xlabel("Number of nodes")
     plt.ylabel("Calculation speed (iterations/s)")
 
