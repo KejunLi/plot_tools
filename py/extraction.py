@@ -148,7 +148,7 @@ def extract_aps(dir_f):
     #print(l_atom_atompos)
     return(l_atom_atompos)
 
-def extract_eigenenergy():
+def extract_eigenenergy(dir_f):
     """
     this function is used to extract eigenenergy and occupations
     near valence band maximum (VBM) and conduction band minimum (CBM)
@@ -185,7 +185,6 @@ def extract_eigenenergy():
     # print(counts)
     # collect spinup eigenenergies
     for line in lines:
-        l_raw_E_spinup = []
         if num_spinup > 1:
             if "SPIN UP" in line:
                 num_spinup -= 1
@@ -213,19 +212,19 @@ def extract_eigenenergy():
                 else:
                     break
             elif isfound_kb_spinup and line.split() and not is_occ_spinup:
-                l_raw_E_spinup = line.strip("\n").split()
-                got_E_spinup += len(l_raw_E_spinup)
-                l_E_spinup.append(np.array(l_raw_E_spinup))
+                for value in line.strip("\n").split():
+                    l_E_spinup.append(value)
+                got_E_spinup += len(line.strip("\n").split())
             elif is_occ_spinup and line.split():
                 if len(line.split()) != 8:
                     continue
                 else:
-                    l_occ_spinup.append(np.array(line.split()))
+                    for value in line.split():
+                        l_occ_spinup.append(value)
                     got_occ_spinup += len(line.split())
 
     # collect spindown eigenenergies
     for line in lines:
-        l_raw_E_spindown = []
         if num_spindown > 1:
             if "SPIN DOWN" in line:
                 num_spindown -= 1
@@ -253,17 +252,19 @@ def extract_eigenenergy():
                 else:
                     break
             elif isfound_kb_spindown and line.split() and not is_occ_spindown:
-                l_raw_E_spindown = line.strip("\n").split()
-                got_E_spindown += len(l_raw_E_spindown)
-                l_E_spindown.append(np.array(l_raw_E_spindown))
+                for value in line.strip("\n").split():
+                    l_E_spindown.append(value)
+                got_E_spindown += len(line.strip("\n").split())
             elif is_occ_spindown and line.split():
                 if len(line.split()) != 8:
                     continue
                 else:
-                    l_occ_spindown.append(np.array(line.split()))
+                    for value in line.split():
+                        l_occ_spindown.append(value)
                     got_occ_spindown += len(line.split())
-    l_all.append(l_E_spinup)
-    l_all.append(l_E_spindown)
-    l_all.append(l_occ_spinup)
-    l_all.append(l_occ_spindown)
+
+    l_all.append(np.array(l_E_spinup))
+    l_all.append(np.array(l_E_spindown))
+    l_all.append(np.array(l_occ_spinup))
+    l_all.append(np.array(l_occ_spindown))
     return(l_all)

@@ -9,10 +9,10 @@ from configuration_for_plot import config_plot
 from extraction import extract_eps
 from sort_files import files_in_dir, sort_var_and_f
 
-################################### Input #########################################
+################################### Input ######################################
 directory = "/home/likejun/work/hBN/Ti/supercell_66/rpa/dnk_3/new_data/rps_1"
 pfn = "eps" # parts of a file name
-###################################################################################
+################################################################################
 config_plot()
 
 f = files_in_dir(directory, pfn)[0]

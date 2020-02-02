@@ -1,83 +1,99 @@
 #!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
-import numpy as np 
-import scipy as spy
-import pylab as ply
-import argparse
-import sys
-import re
+import numpy as np
 from configuration_for_plot import config_plot
+from sort_files import files_in_dir
+from extraction import extract_eigenenergy
 
-# read and extract spin-up and spin-down energy level directly from relax*.out
-def extract_data():
-    if "------ SPIN UP ------------" in lines[::-1]:
+#################################### Input #####################################
+directory = "/home/likejun/work/hBN/Ti/supercell_88/cs/nonradiative/relax-gs"
+# Fermi level, the highest occupied level whose wavefunction is delocalized,
+# is number levels below the cbm
+number = 2
+################################################################################
 
+dir_f = files_in_dir(directory, "relax.out")[1][0]
+l_E_spinup = extract_eigenenergy(dir_f)[0]
+l_E_spindown = extract_eigenenergy(dir_f)[1]
+l_occ_spinup = extract_eigenenergy(dir_f)[2]
+l_occ_spindown = extract_eigenenergy(dir_f)[3]
 
-'''
-# read and extract spin-up and spin-down energy level data
-def read_extract_spinele(file_name):
-    with open(file_name, 'r') as f:
-        lines = f.readlines()
-        saved_data = []
-        for line in lines:
-            # Searching for positive, negative, and/or decimals, you could use [+-]?\d+(?:\.\d+)
-            # add support for exponential form, try [+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?
-            raw_data = re.findall(r"[+-]?\d+\.\d*", line)
-            for val in raw_data:
-                saved_data.append(float(val))
-        return(saved_data)
-'''
+for i, occupation in enumerate(l_occ_spinup):
+    if float(occupation) == 0:
+        vbm_spinup = i - 1
+        cbm_spinup = i
+        break
+for i, occupation in enumerate(l_occ_spindown):
+    if float(occupation) == 0:
+        vbm_spindown = i - 1
+        cbm_spindown = i
+        break
 
-# directory where the file is and name of the file
-def dir_and_name(directory, name):
-    di = str(directory)
-    na = str(name)
-    return(di+na)
+if float(l_E_spinup[vbm_spinup]) >= float(l_E_spindown[vbm_spindown]):
+    vbm_E = float(l_E_spinup[vbm_spinup])
+    #fermi = float(l_E_spinup[vbm_spinup-number])
+    print("spin up")
+    print("No.{} highest occupied level {} eV".format(vbm_spinup, vbm_E))
+else:
+    vbm_E = float(l_E_spindown[vbm_spindown])
+    #fermi = float(l_E_spindown[vbm_spindown-number])
+    print("spin down")
+    print("No.{} highest occupied level {} eV".format(vbm_spindown, vbm_E))
 
-spinupele = dir_and_name("/home/likejun/work/Mo_doped/", "spinupele")
-spindownele = dir_and_name("/home/likejun/work/Mo_doped/", "spindownele")
-spinup = read_extract_spinele(spinupele)
-spindown = read_extract_spinele(spindownele)
+if float(l_E_spinup[cbm_spinup]) <= float(l_E_spindown[cbm_spindown]):
+    cbm_E = float(l_E_spinup[cbm_spinup])
+    print("spin up")
+    print("No.{} lowest unoccupied state {} eV".format(cbm_spinup, cbm_E))
+else:
+    cbm_E = float(l_E_spindown[cbm_spindown])
+    print("spin down")
+    print("No.{} lowest unoccupied state {} eV".format(cbm_spindown, cbm_E))
 
-
-#config_plot()
-
+spinup_E = l_E_spinup[range(vbm_spinup-4, vbm_spinup+6)]
+spindown_E = l_E_spindown[range(vbm_spinup-4, vbm_spinup+6)]
+config_plot()
 # set VBM as fermi level
-fermi = -4.5346
+if float(l_E_spinup[vbm_spinup-number]) <= float(l_E_spindown[vbm_spindown-number]):
+    fermi = float(l_E_spindown[vbm_spindown-number])
+else:
+    fermi = float(l_E_spinup[vbm_spinup-number])
 x_fermi = [0,1]
 y_fermi = [0,0]
-plt.plot(x_fermi, y_fermi, linestyle='dotted', linewidth=0.5, color='black')
+plt.plot(x_fermi, y_fermi, linestyle='dashed', linewidth=0.5, color='black')
 
 # plot energy levels of spin up and down
-for yv in spinup:
-    x = [0.2,0.48]
+for yv in spinup_E:
+    yv = float(yv)
+    x = [0.1,0.48]
     y = [yv-fermi, yv-fermi]
     if yv-fermi <= 0:
-        plt.plot(x, y, linewidth=1, color='orangered')
+        plt.plot(x, y, linewidth=1, color='tab:red')
+        plt.text(0.05, yv-fermi, str((format(yv-fermi, ".2f"))), fontsize=8,
+        horizontalalignment='center', verticalalignment='center')
     else:
-        plt.plot(x, y, linewidth=1, color='forestgreen')
-
-for yv in spindown:
-    x = [0.52,0.8]
+        plt.plot(x, y, linewidth=1, color='tab:blue')
+        plt.text(0.05, yv-fermi, str((format(yv-fermi, ".2f"))), fontsize=8,
+        horizontalalignment='center', verticalalignment='center')
+for yv in spindown_E:
+    yv = float(yv)
+    x = [0.52,0.9]
     y = [yv-fermi, yv-fermi]
-
     if yv-fermi <= 0:
-        plt.plot(x, y, linewidth=1, color='crimson')
+        plt.plot(x, y, linewidth=1, color='tab:red')
+        plt.text(0.95, yv-fermi, str((format(yv-fermi, ".2f"))), fontsize=8,
+        horizontalalignment='center', verticalalignment='center')
     else:
-        plt.plot(x, y, linewidth=1, color='dodgerblue')
+        plt.plot(x, y, linewidth=1, color='tab:blue')
+        plt.text(0.95, yv-fermi, str((format(yv-fermi, ".2f"))), fontsize=8,
+        horizontalalignment='center', verticalalignment='center')
 
-# add label to y-axis
-ply.ylabel("E-E$_{Fermi}$ (eV)")
-
-# set x and y range
-ply.xlim([0,1])
+plt.ylabel("E-E$_{Fermi}$ (eV)")
+plt.xlim([0,1])
 # ply.ylim([-2.5,3])
 
 # remove x-axis label
 plt.gca().xaxis.set_major_locator(plt.NullLocator())
-
-# show plot
 plt.show()
 
 # save plot in a eps file
