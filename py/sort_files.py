@@ -2,17 +2,6 @@
 import os
 import re
 
-#####################################################
-# d_dir stands for destinated directory
-# f_name for name of a file
-# l_f for list of files
-# l_df for list of directory + file name
-# l_var for list of variable
-# l_dvar for list of dependent variable
-# s_var for sorted variable
-# sl_var for sorted list of variable
-# sl_dvar for sorted list of dependent variable
-####################################################
 
 def files_in_dir(d_dir, *conditions):
     """
@@ -20,26 +9,26 @@ def files_in_dir(d_dir, *conditions):
     objective files should satisfy conditions in their names
     """
     d_dir = d_dir + "/"
-    l_f = []
-    l_df = []
+    list_f = []
+    list_dir_f = []
     for f_name in os.listdir(d_dir):
         for condition in conditions:
             if condition in f_name:
-                l_f.append(f_name)
-                l_df.append(d_dir+f_name)
-    l_f_df = [l_f, l_df]
-    return(l_f_df)
+                list_f.append(f_name)
+                list_dir_f.append(d_dir+f_name)
+    sum_list = [list_f, list_dir_f]
+    return(sum_list)
 
 
-def sort_var_and_f(l_f):
+def sort_var_and_f(list_f):
     """
     sort out files with variable in ascending order
     return a sorted list of variable (first column)
     and a sorted list of files (second column)
     input is a list of files
     """
-    l_var = []
-    for f_name in l_f:
+    list_var = []
+    for f_name in list_f:
         #raw_var = re.findall(r"[+-]?\d+|[+-]?^\d*\.\d*|0", f_name)
         if re.findall(r"\d+\.\d*", f_name):
             raw_var = re.findall(r"\d+\.\d*", f_name)
@@ -48,17 +37,14 @@ def sort_var_and_f(l_f):
         #print(raw_var)
         var = float(raw_var[0])
         #print(var)
-        l_var.append(var)
-    #print(l_var)
-    sl_var = sorted(l_var)
-    sl_f = []
-    for i, s_var in enumerate(sl_var):
-        for j, var in enumerate(l_var):
+        list_var.append(var)
+    #print(list_var)
+    sorted_list_var = sorted(list_var)
+    sorted_list_f = []
+    for i, s_var in enumerate(sorted_list_var):
+        for j, var in enumerate(list_var):
             if var == s_var:
-                sl_f.append(l_f[j])
-    sl = [sl_var, sl_f]
+                sorted_list_f.append(list_f[j])
+    sum_list = [sorted_list_var, sorted_list_f]
     # print(sl)
-    return(sl)
-
-
-
+    return(sum_list)

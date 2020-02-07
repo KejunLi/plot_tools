@@ -213,14 +213,14 @@ def extract_eigenenergy(dir_f):
                     break
             elif isfound_kb_spinup and line.split() and not is_occ_spinup:
                 for value in line.strip("\n").split():
-                    l_E_spinup.append(value)
+                    l_E_spinup.append(float(value))
                 got_E_spinup += len(line.strip("\n").split())
             elif is_occ_spinup and line.split():
                 if len(line.split()) != 8:
                     continue
                 else:
                     for value in line.split():
-                        l_occ_spinup.append(value)
+                        l_occ_spinup.append(float(value))
                     got_occ_spinup += len(line.split())
 
     # collect spindown eigenenergies
@@ -253,18 +253,18 @@ def extract_eigenenergy(dir_f):
                     break
             elif isfound_kb_spindown and line.split() and not is_occ_spindown:
                 for value in line.strip("\n").split():
-                    l_E_spindown.append(value)
+                    l_E_spindown.append(float(value))
                 got_E_spindown += len(line.strip("\n").split())
             elif is_occ_spindown and line.split():
                 if len(line.split()) != 8:
                     continue
                 else:
                     for value in line.split():
-                        l_occ_spindown.append(value)
+                        l_occ_spindown.append(float(value))
                     got_occ_spindown += len(line.split())
 
-    l_all.append(np.array(l_E_spinup))
-    l_all.append(np.array(l_E_spindown))
-    l_all.append(np.array(l_occ_spinup))
-    l_all.append(np.array(l_occ_spindown))
+    l_all.append(l_E_spinup)
+    l_all.append(l_E_spindown)
+    l_all.append(l_occ_spinup)
+    l_all.append(l_occ_spindown)
     return(l_all)

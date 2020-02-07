@@ -11,7 +11,7 @@ from extraction import extract_etot
 from fitting import quadratic_fct, best_vals_of_quadratic_fct
 
 ################################### Input ######################################
-directory = "/home/likejun/work/hBN/nbvn/nonradiative"
+directory = "/home/likejun/work/hBN/Ti/7x7/nonradiative"
 dQ = 0.7007279446719012 # change of nuclear coordinate
 min_x = -0.4; max_x = 2.5
 min_y = -0.05; max_y = 2.5

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
 from configuration_for_plot import config_plot, view_3d
@@ -9,19 +8,11 @@ from general_functions import cal_dQ, crystal_coord_to_cartesian_coord
 
 ################################### Input ######################################
 filename = "scf.in"
-directory = "/home/likejun/work/hBN/Mo/supercell_66/nonradiative/yinan"
+directory = "/home/likejun/work/hBN/Ti/7x7/nonradiative"
 # edges of unit cell
-a = 15.043730685
-b = 15.043730685
-c = 21.167089904
-#directory = "/home/likejun/work/hBN/Mo/supercell_88/cal_1"
-#a = 20.058309104
-#b = 20.058309104
-#c = 21.167089904
-#directory = "/home/likejun/work/hBN/Ti/supercell_1010/nonradiative/cal_7"
-#a = 25.072884475
-#b = 25.072884475
-#c = 21.167089904
+a = 17.5
+b = 17.5
+c = 15
 ################################################################################
 
 # this part looks for all the scf.out files and save in the list
@@ -69,6 +60,7 @@ for i in range(len(set_atompos)):
             set_dy = []
             set_dz = []
             set_dQ = []
+            DQ = 0
             for k in range(len(set_atompos[i][j])):
                 # fractional crystal coordinates
                 u0 = float(set_atompos[i][0][k][0])
@@ -98,6 +90,7 @@ for i in range(len(set_atompos)):
                 dQ = cal_dQ(dx, dy, dz, set_atom[i][j][k])
                 set_dQ.append(dQ)
             if j == 12:
+                print(DQ)
                 title = "Linear extrapolation ratio = {}".format(sl_ratio[j])
                 view_3d(set_x0, set_y0, set_dQ, title=title,
                         view_direction="front_view", plot_corlorbar=True)
