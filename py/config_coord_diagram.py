@@ -7,56 +7,81 @@ import re
 import os
 from configuration_for_plot import config_plot
 from sort_files import files_in_dir, sort_var_and_f
-from extraction import extract_etot
+from extraction import extract_etot, extract_aps, extract_cellpara
 from fitting import quadratic_fct, best_vals_of_quadratic_fct
+from general_functions import cal_dQ
 
 ################################### Input ######################################
-directory = "/home/likejun/work/hBN/Ti/7x7/nonradiative"
-dQ = 0.7007279446719012 # change of nuclear coordinate
+directory = "/home/likejun/work/hBN/Mo/supercell_88/cal_1"
 min_x = -0.4; max_x = 2.5
 min_y = -0.05; max_y = 2.5
 label = ["NBVN (ex)", "NBVN (gs)"] # label the two curves
 shift_label = 0.4 # negative to left, positive to right
 title = "NBVN"
-################################################################################
-##################### Shift the labels of ZPL and E_rel ########################
-####################### usually don't need to change ###########################
-left_shift_pos_E_zpl = 3.5
-right_shift_pos_E_rel = 1.2
+left_shift_pos_E_zpl = 3.5 # shift label of ZPL
+right_shift_pos_E_rel = 1.2 # shift label of E_rel
 ################################################################################
 
 # this part looks for all the scf.out files and save in the list
 # for ground state and excited state, respectively.
-l_dir_lin = []
-l_dir_ratio = []
-set_dir_f = []
-l_dir_lin = files_in_dir(directory, "lin")[1]
-for dir_lin in l_dir_lin:
-    l_dir_ratio.append(files_in_dir(dir_lin, "ratio-")[1])
+list_dir_lin = []
+list_dir_ratio = []
+set_dir_scfin = []
+set_dir_scfout = []
+list_dir_lin = files_in_dir(directory, "lin")[1]
+for dir_lin in list_dir_lin:
+    list_dir_ratio.append(files_in_dir(dir_lin, "ratio-")[1])
 # print(dir_ratio)
-for dir_ratio in l_dir_ratio:
-    l_dir_f_temp = []
+for dir_ratio in list_dir_ratio:
+    list_dir_scfout_temp = []
+    list_dir_scfin_temp = []
     for dir_ratio_i in dir_ratio:
-        l_dir_f_temp.append(files_in_dir(dir_ratio_i, "scf.out")[1][0])
-    set_dir_f.append(l_dir_f_temp)
+        list_dir_scfin_temp.append(files_in_dir(dir_ratio_i, "scf.in")[1][0])
+        list_dir_scfout_temp.append(files_in_dir(dir_ratio_i, "scf.out")[1][0])
+    set_dir_scfin.append(list_dir_scfin_temp)
+    set_dir_scfout.append(list_dir_scfout_temp)
 # print(dir_f)
+
+# calculate dQ
+set_atom = []
+set_atompos = []
+# look for CELL_PARAMETERS from output
+for dir_f in set_dir_scfout[0]:
+    if "ratio-0.0000" in dir_f or "ratio-1.0000" in dir_f:
+        list_cellpara = np.asarray(extract_cellpara(dir_f))
+# look for atomic positions from scf.in
+for dir_f in set_dir_scfin[0]:
+    if "ratio-0.0000" in dir_f or "ratio-1.0000" in dir_f:
+        list_atom = extract_aps(dir_f)[0]
+        list_atompos = extract_aps(dir_f)[1]
+        set_atom.append(list_atom)
+        set_atompos.append(np.asarray(list_atompos))
+set_dQ2 = []
+for i in range(len(set_atompos)):
+    for j in range(len(set_atompos[i])):
+        (x0, y0, z0) = np.matmul(set_atompos[i][j], list_cellpara)
+        (xi, yi, zi) = np.matmul(set_atompos[i+1][j], list_cellpara)
+        dQi = cal_dQ(xi-x0, yi-y0, zi-z0, set_atom[i][j])
+        set_dQ2.append(dQi**2)
+    break
+dQ = np.sqrt(sum(set_dQ2))
+
 
 # this part refines the scf.out files and extracts
 # the ratio of linear extrapolation and corresponding total energies
 set_etot = []
 set_dQ = [] # nuclear coordinate
-for i, l_dir_f in enumerate(set_dir_f):
+for i, list_dir_scfout in enumerate(set_dir_scfout):
     #print(d_f)
-    l_etot = []
+    list_etot = []
     nuc_coord = [] # nuclear coordinate
-    sl_ratio = sort_var_and_f(l_dir_f)[0]
-    sl_dir_f = sort_var_and_f(l_dir_f)[1]
-    #print(s_ratio, s_dir_f)
-    for j in range(len(sl_dir_f)):
-        nuc_coord.append(sl_ratio[j]*dQ)
-        l_etot.append(extract_etot(sl_dir_f[j], "!")[0])
+    sorted_list_ratio = sort_var_and_f(list_dir_scfout)[0]
+    sorted_list_dir_scfout = sort_var_and_f(list_dir_scfout)[1]
+    for j, dir_f in enumerate(sorted_list_dir_scfout):
+        nuc_coord.append(sorted_list_ratio[j]*dQ)
+        list_etot.append(extract_etot(dir_f, "!")[0])
     set_dQ.append(nuc_coord)
-    set_etot.append(l_etot)
+    set_etot.append(list_etot)
     #print(min_etot)
 
 # obtain ZPL, E_rel, E_abs and E_em, and prepare for plotting

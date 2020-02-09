@@ -29,57 +29,152 @@ def config_plot():
     # plt.ticklabel_format(axis='y', style='plain',
     #                       scilimits=(0,0), useOffset=None, useMathText=True)
 
-def view_3d(set_x0, set_y0, set_dQ, **kwargs):
-    fig = plt.figure(num=None, figsize=(10, 7.5), dpi=200,
+def view_3d(x, y, z, **kwargs):
+    fig = plt.figure(num=None, figsize=(10, 7.5), dpi=120,
             facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1, projection="3d")
-    ax.scatter(set_x0, set_y0, set_dQ, zdir="z", s=20, c=None)
-    surf = ax.plot_trisurf(set_x0, set_y0, set_dQ, linewidth=0.2,
+    ax.scatter(x, y, z, zdir="z", s=20, c=None)
+    surf = ax.plot_trisurf(x, y, z, linewidth=0.2,
             antialiased=True, cmap=plt.cm.viridis, alpha=0.6)
-    ax.set_xlim(-13,26)
-    ax.set_ylim(-0.5,22)
-    ax.set_zlim(0,0.8)
 
+    print("\nPlot tips\n")
+    # title
+    if "title" in kwargs:
+        if kwargs.get("title") == None:
+            print("Empty title")
+        else:
+            ax.set_title("{}".format(kwargs.get("title")))
+    else:
+        print("Tip: if you want to add title to diagram, specify " +
+            "'title = {}'".format("?") + "from the input")
+
+    # about view directions and axes labels
     if "view_direction" in kwargs:
         if kwargs.get("view_direction") == "front_view":
             ax.view_init(azim=-90, elev=0)
             ax.w_yaxis.line.set_lw(0.)
             ax.set_yticks([])
-            ax.set_xlabel("x ($\AA$)")
-            ax.set_zlabel("\u0394Q (amu$^{1/2}$$\AA$)")
-            #ax3.set_zlabel("z ($\AA$)")
+            if "xlabel" in kwargs:
+                if kwargs.get("xlabel") == None:
+                    print("Empty xlabel")
+                else:
+                    ax.set_xlabel(kwargs.get("xlabel"))
+            else:
+                print("Tip: if you want to show xlabel, specify " +
+                    "'xlabel = ?' from the input")
+            if "zlabel" in kwargs:
+                if kwargs.get("zlabel") == None:
+                    print("Empty zlabel")
+                else:
+                    ax.set_zlabel(kwargs.get("zlabel"))
+            else:
+                print("Tip: if you want to show zlabel, specify " +
+                    "'zlabel = ?' from the input")
         elif kwargs.get("view_direction") == "top_view":
             ax.view_init(azim=-90, elev=90)
             ax.w_zaxis.line.set_lw(0.)
             ax.set_zticks([])
-            ax.set_xlabel("x ($\AA$)")
-            ax.set_ylabel("y ($\AA$)")
+            if "xlabel" in kwargs:
+                if kwargs.get("xlabel") == None:
+                    print("Empty xlabel")
+                else:
+                    ax.set_xlabel(kwargs.get("xlabel"))
+            else:
+                print("Tip: if you want to show xlabel, specify " +
+                    "'xlabel = ?' from the input")
+            if "ylabel" in kwargs:
+                if kwargs.get("ylabel") == None:
+                    print("Empty ylabel")
+                else:
+                    ax.set_ylabel(kwargs.get("ylabel"))
+            else:
+                print("Tip: if you want to show ylabel, specify " +
+                    "'ylabel = ?' from the input")
         else:
             ax.view_init(azim=-180, elev=0)
             ax.w_xaxis.line.set_lw(0.)
             ax.set_xticks([])
-            ax.set_ylabel("y ($\AA$)")
-            ax.set_zlabel("\u0394Q (amu$^{1/2}$$\AA$)")
-        #ax3.set_zlabel("z ($\AA$)")
+            if "ylabel" in kwargs:
+                if kwargs.get("ylabel") == None:
+                    print("Empty ylabel")
+                else:
+                    ax.set_ylabel(kwargs.get("ylabel"))
+            else:
+                print("Tip: if you want to show ylabel, specify " +
+                    "'ylabel = ?' from the input")
+            if "zlabel" in kwargs:
+                if kwargs.get("zlabel") == None:
+                    print("Empty zlabel")
+                else:
+                    ax.set_zlabel(kwargs.get("zlabel"))
+            else:
+                print("Tip: if you want to show zlabel, specify " +
+                    "'zlabel = ?' from the input")
     else:
-        ax.set_xlabel("x ($\AA$)")
-        ax.set_ylabel("y ($\AA$)")
-        ax.set_zlabel("\u0394Q (amu$^{1/2}$$\AA$)")
-        #ax3.set_zlabel("z ($\AA$)")
+        print("Tip: if you want to take the top view of the 3D plot, " +
+            "specify 'view_direction = top_view' from the input, so as " +
+            "for front view and left view.")
+        if "xlabel" in kwargs:
+            if kwargs.get("xlabel") == None:
+                print("Empty xlabel")
+            else:
+                ax.set_xlabel(kwargs.get("xlabel"))
+        else:
+            print("Tip: if you want to show xlabel, specify " +
+                "'xlabel = ?' from the input")
+        if "ylabel" in kwargs:
+            if kwargs.get("ylabel") == None:
+                print("Empty ylabel")
+            else:
+                ax.set_ylabel(kwargs.get("ylabel"))
+        else:
+            print("Tip: if you want to show ylabel, specify " +
+                "'ylabel = ?' from the input")
+        if "zlabel" in kwargs:
+            if kwargs.get("zlabel") == None:
+                print("Empty zlabel")
+            else:
+                ax.set_zlabel(kwargs.get("zlabel"))
+        else:
+            print("Tip: if you want to show zlabel, specify " +
+                "'zlabel = ?' from the input")
 
-    if "title" in kwargs:
-        ax.set_title("{}".format(kwargs.get("title")))
+    # range of axes
+    if "xlim" in kwargs:
+        if kwargs.get("xlim") == None:
+            print("Empty xlim")
+        else:
+            ax.set_xlim(kwargs.get("xlim"))
     else:
-        print("Reminder: to add title to diagram, add 'title = {}'."\
-                .format("content of title"))
+        print("Tip: if you want to constrain x-axis, specify "+
+            "'xlim = (min,max)' from the input")
+    if "ylim" in kwargs:
+        if kwargs.get("ylim") == None:
+            print("Empty ylim")
+        else:
+            ax.set_ylim(kwargs.get("ylim"))
+    else:
+        print("Tip: if you want to constrain y-axis, specify "+
+            "'ylim = (min,max)' from the input")
+    if "zlim" in kwargs:
+        if kwargs.get("zlim") == None:
+            print("Empty zlim")
+        else:
+            ax.set_zlim(kwargs.get("zlim"))
+    else:
+        print("Tip: if you want to constrain z-axis, specify "+
+            "'zlim = (min,max)' from the input")
 
+    # colorbar
     if "plot_corlorbar" in kwargs:
         if kwargs.get("plot_corlorbar"):
             if "setup_boundaries" in kwargs:
                 fig.colorbar(surf, boundaries=kwargs.get("setup_boundaries"))
             else:
-                print("Reminder: to set up boundaries for colorbar, " +
-                    "add 'setup_boundaries = np.linspace(min,max)'.")
+                print("Tip: if you want to set boundaries for colorbar, " +
+                    "specify 'setup_boundaries = np.linspace(min,max)' " +
+                    "from the input")
                 fig.colorbar(surf)
     else:
-        print("Reminder: to plot colorbar, add 'plot_corlorbar = True'.")
+        print("Tip: if you want to plot colorbar, specify " +
+            "'plot_corlorbar = True' from the input")
