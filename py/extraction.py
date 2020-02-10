@@ -75,17 +75,17 @@ def extract_time(dir_f):
     plot the list versus the number of iteration
     the gradient of the curve suggests how fast a calculation is
     output is a list
-    l_cpu_time = [cpu_time1, cpu_time2, cpu_time3, ...]
+    list_cpu_time = [cpu_time1, cpu_time2, cpu_time3, ...]
     """
     with open(dir_f, "r") as f:
         lines = f.readlines()
-        l_cpu_time = []
+        list_cpu_time = []
     #for line in lines[::-1]:
     for line in reversed(lines):
         if "total cpu time" in line:
             cpu_time = re.findall(r"[+-]?\d+\.\d*", line)
-            l_cpu_time.append(float(cpu_time[0]))
-    return(l_cpu_time)
+            list_cpu_time.append(float(cpu_time[0]))
+    return(list_cpu_time)
 
 
 
@@ -161,24 +161,24 @@ def extract_aps(dir_f):
     this can read relax.in, relax.out or scf.in
     find, read and save the optimized ATOMIC POSITIONS
     output is an array of atomic positions
-    l_atom_atompos = [[l_atom], [l_atompos]]
-    l_atom = [atom1, atom2, atom3, ...]
-    l_atompos = [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3], ...]
+    list_atom_atompos = [[list_atom], [list_atompos]]
+    list_atom = [atom1, atom2, atom3, ...]
+    list_atompos = [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3], ...]
     """
     found_atompos = False
     got_all_atompos = False
     with open(dir_f, "r") as f:
         lines = f.readlines()
-        l_atom_atompos = []
+        list_atom_atompos = []
         counts = int(0)
-        l_atom = []
-        l_atompos = []
+        list_atom = []
+        list_atompos = []
     for line in lines:
         if "ATOMIC_POSITIONS" in line:
             counts += 1
     # print(counts)
     for line in lines:
-        l_raw_atompos = []
+        list_raw_atompos = []
         atomic_position = []
         # directly go to the last ATOMIC_POSITIONS
         if counts > 1:
@@ -194,25 +194,25 @@ def extract_aps(dir_f):
                 found_atompos = True
                 continue
         if found_atompos:
-            l_raw_atom_atompos = line.strip().split()
-            if len(l_raw_atom_atompos) != 4:
+            list_raw_atom_atompos = line.strip().split()
+            if len(list_raw_atom_atompos) != 4:
                 got_all_atompos = True
             elif not got_all_atompos:
                 #print(line)
-                #print(l_raw_atom_atompos)
-                atom_name = l_raw_atom_atompos[0]
-                x = float(l_raw_atom_atompos[1])
-                y = float(l_raw_atom_atompos[2])
-                z = float(l_raw_atom_atompos[3])
+                #print(list_raw_atom_atompos)
+                atom_name = list_raw_atom_atompos[0]
+                x = float(list_raw_atom_atompos[1])
+                y = float(list_raw_atom_atompos[2])
+                z = float(list_raw_atom_atompos[3])
                 atomic_position.append(x)
                 atomic_position.append(y)
                 atomic_position.append(z)
-                l_atompos.append(atomic_position)
-                l_atom.append(atom_name)
-    l_atom_atompos.append(l_atom)
-    l_atom_atompos.append(l_atompos)
-    #print(l_atom_atompos)
-    return(l_atom_atompos)
+                list_atompos.append(atomic_position)
+                list_atom.append(atom_name)
+    list_atom_atompos.append(list_atom)
+    list_atom_atompos.append(list_atompos)
+    #print(list_atom_atompos)
+    return(list_atom_atompos)
 
 
 def extract_eigenenergy(dir_f):
@@ -220,11 +220,12 @@ def extract_eigenenergy(dir_f):
     this function is used to extract eigenenergy and occupations at Gamma point
     near valence band maximum (VBM) and conduction band minimum (CBM)
     return:
-    l_all = [l_E_spinup, l_E_spindown, l_occ_spinup, l_occ_spindown]
-    type(l_E_spinup) = list
-    type(l_E_spindown) = list
-    type(l_occ_spinup) = list
-    type(l_occ_spindown) = list
+    list_all = [list_E_spinup, list_E_spindown, list_occ_spinup,
+            list_occ_spindown]
+    type(list_E_spinup) = list
+    type(list_E_spindown) = list
+    type(list_occ_spinup) = list
+    type(list_occ_spindown) = list
     """
     found_E_spinup = False
     found_E_spindown = False
@@ -236,11 +237,11 @@ def extract_eigenenergy(dir_f):
     got_E_spindown = int(0)
     got_occ_spinup = int(0)
     got_occ_spindown = int(0)
-    l_all = []
-    l_E_spinup = []
-    l_E_spindown = []
-    l_occ_spinup = []
-    l_occ_spindown = []
+    list_all = []
+    list_E_spinup = []
+    list_E_spindown = []
+    list_occ_spinup = []
+    list_occ_spindown = []
     counts = int(0)
     with open(dir_f, "r") as f:
         lines = f.readlines()
@@ -280,14 +281,14 @@ def extract_eigenenergy(dir_f):
                     break
             elif found_kb_spinup and line.split() and not is_occ_spinup:
                 for value in line.strip("\n").split():
-                    l_E_spinup.append(float(value))
+                    list_E_spinup.append(float(value))
                 got_E_spinup += len(line.strip("\n").split())
             elif is_occ_spinup and line.split():
                 if len(line.split()) != 8:
                     continue
                 else:
                     for value in line.split():
-                        l_occ_spinup.append(float(value))
+                        list_occ_spinup.append(float(value))
                     got_occ_spinup += len(line.split())
 
     # collect spindown eigenenergies
@@ -320,18 +321,18 @@ def extract_eigenenergy(dir_f):
                     break
             elif found_kb_spindown and line.split() and not is_occ_spindown:
                 for value in line.strip("\n").split():
-                    l_E_spindown.append(float(value))
+                    list_E_spindown.append(float(value))
                 got_E_spindown += len(line.strip("\n").split())
             elif is_occ_spindown and line.split():
                 if len(line.split()) != 8:
                     continue
                 else:
                     for value in line.split():
-                        l_occ_spindown.append(float(value))
+                        list_occ_spindown.append(float(value))
                     got_occ_spindown += len(line.split())
 
-    l_all.append(l_E_spinup)
-    l_all.append(l_E_spindown)
-    l_all.append(l_occ_spinup)
-    l_all.append(l_occ_spindown)
-    return(l_all)
+    list_all.append(list_E_spinup)
+    list_all.append(list_E_spindown)
+    list_all.append(list_occ_spinup)
+    list_all.append(list_occ_spindown)
+    return(list_all)

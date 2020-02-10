@@ -209,12 +209,14 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
                         list_atompos[j].append(1)
                 else:
                     list_atompos[j].append(1)
+                """
                 print(j, "{} ".format(list_atom[j]) + "is outside of " +
                     "the circle, and its atomic positions are fixed")
             else:
                 print(j, "{} ".format(list_atom[j]) + "is within the circle " +
                     "around defect {}, ".format(list_atom[list_defect_num[i]]) +
                     "and its atomic position are not fixed")
+                """
             temp_list_atompos.append(list_atompos[j])
         temp_new_list_atompos.append(temp_list_atompos)
 
@@ -227,5 +229,31 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
                     continue
     else:
         new_list_atompos = temp_new_list_atompos[0]
-    print(np.array(new_list_atompos))
     return(new_list_atompos, list_atom_coord)
+
+
+
+def read_vasp(dir_f):
+    list_cellpara = []
+    list_atompos = []
+    list_atom_coord = []
+    with open(dir_f, "r") as f:
+        lines = f.readlines()
+    for line in lines[2:5]:
+        list_cellpara_component = []
+        for x in re.findall(r"[+-]?\d+\.\d*", line):
+            list_cellpara_component.append(float(x))
+        list_cellpara.append(list_cellpara_component)
+    for line in lines[8:]:
+        atomic_position = []
+        u = float(line.strip().split()[0])
+        v = float(line.strip().split()[1])
+        w = float(line.strip().split()[2])
+        atomic_position.append(u)
+        atomic_position.append(v)
+        atomic_position.append(w)
+        list_atompos.append(atomic_position)
+    for i in range(len(list_atompos)):
+        (x, y, z) = np.matmul(list_atompos[i], list_cellpara)
+        list_atom_coord.append(np.asarray([x, y, z]))
+    return(list_atompos, list_atom_coord)

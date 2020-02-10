@@ -12,9 +12,9 @@ from fitting import quadratic_fct, best_vals_of_quadratic_fct
 from general_functions import cal_dQ
 
 ################################### Input ######################################
-directory = "/home/likejun/work/hBN/Mo/supercell_88/cal_1"
-min_x = -0.4; max_x = 2.5
-min_y = -0.05; max_y = 2.5
+directory = "/home/likejun/work/hBN/Ti/7x7/c1/nonradiative"
+min_x = -5; max_x = 5
+min_y = -0.05; max_y = 0.8
 label = ["NBVN (ex)", "NBVN (gs)"] # label the two curves
 shift_label = 0.4 # negative to left, positive to right
 title = "NBVN"
@@ -65,7 +65,7 @@ for i in range(len(set_atompos)):
         set_dQ2.append(dQi**2)
     break
 dQ = np.sqrt(sum(set_dQ2))
-
+print(dQ)
 
 # this part refines the scf.out files and extracts
 # the ratio of linear extrapolation and corresponding total energies
