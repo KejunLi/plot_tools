@@ -1,6 +1,7 @@
 #1/usr/bin/env/ python3
 import numpy as np
 import re
+from extraction import extract_aps, extract_cellpara
 
 
 def interpolate(inp, new_length):
@@ -136,3 +137,95 @@ def energy_level(list_E_spinu, list_E_spind, list_occ_spinu, list_occ_spind,
     E_spinu = list_E_spinu[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
     E_spind = list_E_spind[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
     return(E_spinu, E_spind, vbm, cbm, fermi)
+
+
+def fix_atompos(dir_f, radius, defect, **kwargs):
+    """
+    this function works for 1D, 2D and 3D
+    set point defect (e.g. Ti) as center of a circle with radius as input
+    measure distance between pristine atoms (e.g. B or N) and defect
+    for atoms out of the circle, append "0 0 1" (x_fixed, y_fixed, z_free)
+    after fractional crystal coordinates so that the positions of those atoms
+    will be fixed, and those in the circle will still be free
+    return:
+    new_list_atompos = [[atompos1], [atompos2], [atompos3], ...]
+    """
+    print("Tip: if you want to fix atomic positions of atoms that are out " +
+        "of the circle, which is centered at defects and has " +
+        "radius {}, ".format(radius) + "specify 'fix_pos = fix_x " +
+        "(or fix_y, fix_z)' from the input")
+    list_cellpara = extract_cellpara(dir_f)
+    list_atom = extract_aps(dir_f)[0]
+    list_atompos = extract_aps(dir_f)[1]
+    new_list_atompos = []
+    temp_new_list_atompos = []
+    list_defect_num = []
+    list_atom_coord = []
+    list_distance = []
+    for i, atom in enumerate(list_atom):
+        if defect == atom:
+            list_defect_num.append(i)
+    for atompos in list_atompos:
+        (x, y, z) = np.matmul(atompos, list_cellpara)
+        list_atom_coord.append(np.asarray([x, y, z]))
+    number_of_defects = len(list_defect_num)
+    number_of_atoms = len(list_atompos)
+
+    # look for distance between pristine atoms and defects
+    for i in list_defect_num:
+        temp_list_distance = []
+        for j in range(len(list_atom_coord)):
+            d = np.linalg.norm(list_atom_coord[j]-list_atom_coord[i])
+            temp_list_distance.append(d)
+            #print(d)
+        list_distance.append(temp_list_distance)
+    max_d = max(np.array(list_distance).flatten())
+
+    # fix atoms out of circle
+    for i in range(number_of_defects):
+        temp_list_atompos = []
+        for j in range(number_of_atoms):
+            d = list_distance[i][j]
+            norm_d = d / max_d
+            if norm_d > radius:
+                if "fix_x" in kwargs:
+                    if kwargs.get("fix_x") == True:
+                        list_atompos[j].append(0)
+                    else:
+                        list_atompos[j].append(1)
+                else:
+                    list_atompos[j].append(1)
+                if "fix_y" in kwargs:
+                    if kwargs.get("fix_y") == True:
+                        list_atompos[j].append(0)
+                    else:
+                        list_atompos[j].append(1)
+                else:
+                    list_atompos[j].append(1)
+                if "fix_z" in kwargs:
+                    if kwargs.get("fix_z") == True:
+                        list_atompos[j].append(0)
+                    else:
+                        list_atompos[j].append(1)
+                else:
+                    list_atompos[j].append(1)
+                print(j, "{} ".format(list_atom[j]) + "is outside of " +
+                    "the circle, and its atomic positions are fixed")
+            else:
+                print(j, "{} ".format(list_atom[j]) + "is within the circle " +
+                    "around defect {}, ".format(list_atom[list_defect_num[i]]) +
+                    "and its atomic position are not fixed")
+            temp_list_atompos.append(list_atompos[j])
+        temp_new_list_atompos.append(temp_list_atompos)
+
+    if number_of_defects > 1:
+        for j in range(number_of_atoms):
+            x = max(len(temp_new_list_atompos[0:][j]))
+            for i in range(number_of_defects):
+                if len(temp_new_list_atompos[i][j]) == x:
+                    new_list_atompos.append(temp_new_list_atompos[i][j])
+                    continue
+    else:
+        new_list_atompos = temp_new_list_atompos[0]
+    print(np.array(new_list_atompos))
+    return(new_list_atompos, list_atom_coord)

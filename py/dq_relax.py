@@ -7,7 +7,7 @@ from extraction import extract_aps, extract_cellpara
 from general_functions import cal_dQ
 
 ################################### Input ######################################
-directory = "/home/likejun/work/hBN/Ti/7x7/nonradiative"
+directory = "/home/likejun/work/hBN/Ti/7x7/c1/nonradiative"
 xlabel = "x ($\AA$)"
 ylabel = "y ($\AA$)"
 zlabel = "\u0394Q (amu$^{1/2}$$\AA$)"
