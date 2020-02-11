@@ -80,6 +80,13 @@ def energy_level(list_E_spinu, list_E_spind, list_occ_spinu, list_occ_spind,
     the input is the list of spinup energies, spindown energies, occupations of
     spinup, occupations of spindown, range of energy levels, and num, which is
     the distance between Fermi level and vbm (Fermi level is lower than vbm)
+    return:
+    (E_spinu, E_spind, vbm, cbm, fermi)
+    type(E_spinu) = list
+    type(E_spind) = list
+    type(vbm) = float
+    type(cbm) = float
+    type(fermi) = float
     """
     print("Input:")
     print("1. list of spinup energies (type: array)")
@@ -148,7 +155,13 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
     after fractional crystal coordinates so that the positions of those atoms
     will be fixed, and those in the circle will still be free
     return:
+    (new_list_atompos, list_atom_coord, list_defect_coord, max_d)
     new_list_atompos = [[atompos1], [atompos2], [atompos3], ...]
+    type(atompos1) = list
+    list_atom_coord = [[atomcoord1], [atomcoord2], [atomcoord3], ...]
+    type(atomcoord1) = list
+    list_defect_coord = [[defect_coord1], [defect_coord2], [defect_coord3], ...]
+    type(max_d) = float
     """
     print("Tip: if you want to fix atomic positions of atoms that are out " +
         "of the circle, which is centered at defects and has " +
@@ -160,11 +173,14 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
     new_list_atompos = []
     temp_new_list_atompos = []
     list_defect_num = []
+    list_defect_coord = []
     list_atom_coord = []
     list_distance = []
     for i, atom in enumerate(list_atom):
         if defect == atom:
             list_defect_num.append(i)
+            defect_coord = np.matmul(list_atompos[i], list_cellpara)
+            list_defect_coord.append(defect_coord)
     for atompos in list_atompos:
         (x, y, z) = np.matmul(atompos, list_cellpara)
         list_atom_coord.append(np.asarray([x, y, z]))
@@ -176,6 +192,8 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
         temp_list_distance = []
         for j in range(len(list_atom_coord)):
             d = np.linalg.norm(list_atom_coord[j]-list_atom_coord[i])
+            z2 = np.power(list_atom_coord[j][2]-list_atom_coord[i][2], 2.0)
+            d = np.sqrt(np.power(d, 2.0)-z2)
             temp_list_distance.append(d)
             #print(d)
         list_distance.append(temp_list_distance)
@@ -229,11 +247,16 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
                     continue
     else:
         new_list_atompos = temp_new_list_atompos[0]
-    return(new_list_atompos, list_atom_coord)
+    return(new_list_atompos, list_atom_coord, list_defect_coord, max_d)
 
 
 
 def read_vasp(dir_f):
+    """
+    read CELL_PARAMETERS and ATOMIC_POSITIONS in vasp file
+    return:
+    (list_atompos, list_atom_coord)
+    """
     list_cellpara = []
     list_atompos = []
     list_atom_coord = []

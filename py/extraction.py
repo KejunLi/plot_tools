@@ -121,6 +121,9 @@ def extract_cellpara(dir_f):
                     convertunit = Bohr2Ang
                 found_CELL_PARAMETERS = True
                 continue
+            else:
+                raise ValueError("could not find CELL_PARAMETERS")
+                break
             if found_CELL_PARAMETERS and read_times < 3:
                 for x in line.strip().split():
                     axes.append(float(x))

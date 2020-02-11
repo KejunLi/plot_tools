@@ -37,6 +37,17 @@ def view_3d(x, y, z, **kwargs):
     surf = ax.plot_trisurf(x, y, z, linewidth=0.2,
             antialiased=True, cmap=plt.cm.viridis, alpha=0.6)
 
+    if "circle" in kwargs:
+        alpha = np.linspace(0.0, np.pi*2, 200)
+        (r, x0, y0, z0) = kwargs.get("circle")
+        x1 = r * np.cos(alpha) + x0
+        y1 = r * np.sin(alpha) + y0
+        z1 = 0.0
+        ax.plot(x1, y1, z1)
+    else:
+        print("Tip: if you want to show circle with defects as center, " +
+            "specify 'circle = (r, x0, y0, z0)' from input")
+
     print("\nPlot tips\n")
     # title
     if "title" in kwargs:
@@ -46,7 +57,7 @@ def view_3d(x, y, z, **kwargs):
             ax.set_title("{}".format(kwargs.get("title")))
     else:
         print("Tip: if you want to add title to diagram, specify " +
-            "'title = {}'".format("?") + "from the input")
+            "'title = {}'".format("?") + "from input")
 
     # about view directions and axes labels
     if "view_direction" in kwargs:
@@ -61,7 +72,7 @@ def view_3d(x, y, z, **kwargs):
                     ax.set_xlabel(kwargs.get("xlabel"))
             else:
                 print("Tip: if you want to show xlabel, specify " +
-                    "'xlabel = ?' from the input")
+                    "'xlabel = ?' from input")
             if "zlabel" in kwargs:
                 if kwargs.get("zlabel") == None:
                     print("Empty zlabel")
@@ -69,7 +80,7 @@ def view_3d(x, y, z, **kwargs):
                     ax.set_zlabel(kwargs.get("zlabel"))
             else:
                 print("Tip: if you want to show zlabel, specify " +
-                    "'zlabel = ?' from the input")
+                    "'zlabel = ?' from input")
         elif kwargs.get("view_direction") == "top_view":
             ax.view_init(azim=-90, elev=90)
             ax.w_zaxis.line.set_lw(0.)
@@ -81,7 +92,7 @@ def view_3d(x, y, z, **kwargs):
                     ax.set_xlabel(kwargs.get("xlabel"))
             else:
                 print("Tip: if you want to show xlabel, specify " +
-                    "'xlabel = ?' from the input")
+                    "'xlabel = ?' from input")
             if "ylabel" in kwargs:
                 if kwargs.get("ylabel") == None:
                     print("Empty ylabel")
@@ -89,7 +100,7 @@ def view_3d(x, y, z, **kwargs):
                     ax.set_ylabel(kwargs.get("ylabel"))
             else:
                 print("Tip: if you want to show ylabel, specify " +
-                    "'ylabel = ?' from the input")
+                    "'ylabel = ?' from input")
         else:
             ax.view_init(azim=-180, elev=0)
             ax.w_xaxis.line.set_lw(0.)
@@ -101,7 +112,7 @@ def view_3d(x, y, z, **kwargs):
                     ax.set_ylabel(kwargs.get("ylabel"))
             else:
                 print("Tip: if you want to show ylabel, specify " +
-                    "'ylabel = ?' from the input")
+                    "'ylabel = ?' from input")
             if "zlabel" in kwargs:
                 if kwargs.get("zlabel") == None:
                     print("Empty zlabel")
@@ -109,10 +120,10 @@ def view_3d(x, y, z, **kwargs):
                     ax.set_zlabel(kwargs.get("zlabel"))
             else:
                 print("Tip: if you want to show zlabel, specify " +
-                    "'zlabel = ?' from the input")
+                    "'zlabel = ?' from input")
     else:
         print("Tip: if you want to take the top view of the 3D plot, " +
-            "specify 'view_direction = top_view' from the input, so as " +
+            "specify 'view_direction = top_view' from input, so as " +
             "for front view and left view.")
         if "xlabel" in kwargs:
             if kwargs.get("xlabel") == None:
@@ -121,7 +132,7 @@ def view_3d(x, y, z, **kwargs):
                 ax.set_xlabel(kwargs.get("xlabel"))
         else:
             print("Tip: if you want to show xlabel, specify " +
-                "'xlabel = ?' from the input")
+                "'xlabel = ?' from input")
         if "ylabel" in kwargs:
             if kwargs.get("ylabel") == None:
                 print("Empty ylabel")
@@ -129,7 +140,7 @@ def view_3d(x, y, z, **kwargs):
                 ax.set_ylabel(kwargs.get("ylabel"))
         else:
             print("Tip: if you want to show ylabel, specify " +
-                "'ylabel = ?' from the input")
+                "'ylabel = ?' from input")
         if "zlabel" in kwargs:
             if kwargs.get("zlabel") == None:
                 print("Empty zlabel")
@@ -137,7 +148,7 @@ def view_3d(x, y, z, **kwargs):
                 ax.set_zlabel(kwargs.get("zlabel"))
         else:
             print("Tip: if you want to show zlabel, specify " +
-                "'zlabel = ?' from the input")
+                "'zlabel = ?' from input")
 
     # range of axes
     if "xlim" in kwargs:
@@ -147,7 +158,7 @@ def view_3d(x, y, z, **kwargs):
             ax.set_xlim(kwargs.get("xlim"))
     else:
         print("Tip: if you want to constrain x-axis, specify "+
-            "'xlim = (min,max)' from the input")
+            "'xlim = (min,max)' from input")
     if "ylim" in kwargs:
         if kwargs.get("ylim") == None:
             print("Empty ylim")
@@ -155,7 +166,7 @@ def view_3d(x, y, z, **kwargs):
             ax.set_ylim(kwargs.get("ylim"))
     else:
         print("Tip: if you want to constrain y-axis, specify "+
-            "'ylim = (min,max)' from the input")
+            "'ylim = (min,max)' from input")
     if "zlim" in kwargs:
         if kwargs.get("zlim") == None:
             print("Empty zlim")
@@ -163,7 +174,7 @@ def view_3d(x, y, z, **kwargs):
             ax.set_zlim(kwargs.get("zlim"))
     else:
         print("Tip: if you want to constrain z-axis, specify "+
-            "'zlim = (min,max)' from the input")
+            "'zlim = (min,max)' from input")
 
     # colorbar
     if "plot_corlorbar" in kwargs:
@@ -173,8 +184,8 @@ def view_3d(x, y, z, **kwargs):
             else:
                 print("Tip: if you want to set boundaries for colorbar, " +
                     "specify 'setup_boundaries = np.linspace(min,max)' " +
-                    "from the input")
+                    "from input")
                 fig.colorbar(surf)
     else:
         print("Tip: if you want to plot colorbar, specify " +
-            "'plot_corlorbar = True' from the input")
+            "'plot_corlorbar = True' from input")

@@ -7,9 +7,10 @@ from general_functions import fix_atompos, read_vasp
 ############################## Input ###########################################
 dir_f = "/home/likejun/work/hBN/Ti/9x9/nonradiative/relax-gs/relax.out"
 dir_f_pristine = "/home/likejun/work/hBN/bulk_hBN_supercell/mp-984_BN/tibn_9x9.vasp"
-radius = 0.5
+radius = 0.55
 ################################################################################
-(list_atompos, list_atom_coord) = fix_atompos(dir_f, radius, "Ti",  fix_y=True)
+(list_atompos, list_atom_coord, list_defect_coord, max_d) = \
+    fix_atompos(dir_f, radius, "Ti",  fix_y=True)
 (list_atompos1, list_atom_coord1) = read_vasp(dir_f_pristine)
 number_of_atoms = len(list_atompos)
 #print(np.array(list_atompos))
@@ -44,7 +45,7 @@ for i in range(number_of_atoms):
     x.append(list_atom_coord[i][0])
     y.append(list_atom_coord[i][1])
     if len(list_atompos[i]) > 3:
-        z.append(list_atom_coord[i][2]+10)
+        z.append(list_atom_coord[i][2]+100)
     else:
         z.append(list_atom_coord[i][2])
 
@@ -56,6 +57,11 @@ for i in range(number_of_atoms):
         str_atompos += format(list_atompos[i][j], ".9f") + "    "
     print(str_atompos)
 
+r = radius * max_d
+x0 = list_defect_coord[0][0]
+y0 = list_defect_coord[0][1]
+z0 = list_defect_coord[0][2]
 
-#view_3d(x, y, z)
+view_3d(x, y, z, circle=(r, x0, y0, z0), view_direction="top_view",
+    xlim=(-10,25), ylim=(-5,25))
 plt.show()
