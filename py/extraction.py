@@ -223,7 +223,7 @@ def extract_aps(dir_f):
                 continue
         if found_atompos:
             list_raw_atom_atompos = line.strip().split()
-            if len(list_raw_atom_atompos) != 4:
+            if len(list_raw_atom_atompos) < 4:
                 got_all_atompos = True
             elif not got_all_atompos:
                 #print(line)
