@@ -13,7 +13,7 @@ def extract_filename(f_name, condition):
     type(num_in_name) = str
     type(chara_name) = str
     """
-    num_in_name = re.findall(r"\d+", f_name)[0]
+    num_in_name = float(re.findall(r"\d+", f_name)[0])
     chara_in_name = re.findall(r"{}".format(condition), f_name)[0]
     # type(*_in_name) == <class 'list'>
     chara_name = chara_in_name + " " + num_in_name
@@ -98,42 +98,67 @@ def extract_cellpara(dir_f):
     type(list_cellpara) = list
     list_cellpara = [array1,array2,array3]
     To use list_cellpara, do the following
-    [x, y, z] = np.dot(np.asarray(list_cellpara), [crystal coordinates])
+    [x, y, z] = np.dot([crystal coordinates], np.asarray(list_cellpara))
     """
     found_CELL_PARAMETERS = False
-    got_CELL_PARAMETERS = False
     got_celldm = False
+    got_CELL_PARAMETERS = False
     read_times = int(0)
     with open(dir_f, "r") as f:
         lines = f.readlines()
         list_cellpara = []
-        list_celldm = []
     # try read input
     if ".in" in dir_f:
+        A = 0
+        C = 0
+        celldm1 = 0
+        celldm3 = 0
         for line in lines:
-            axes = []
-            if not found_CELL_PARAMETERS and "CELL_PARAMETERS" not in line:
-                continue
-            elif not found_CELL_PARAMETERS and "CELL_PARAMETERS" in line:
-                if "angstrom" in line:
-                    convertunit = 1.0
-                elif "bohr" in line:
-                    convertunit = Bohr2Ang
-                found_CELL_PARAMETERS = True
-                continue
-            else:
-                raise ValueError("could not find CELL_PARAMETERS")
+            if "ibrav" in line:
+                ibrav = float(re.findall(r"\d+", line)[0])
                 break
-            if found_CELL_PARAMETERS and read_times < 3:
-                for x in line.strip().split():
-                    axes.append(float(x))
-                list_cellpara.append(np.dot(np.asarray(axes), convertunit))
-                read_times += 1
-            else:
-                break
+        for line in lines:
+            if ibrav == 0:
+                cellpara = []
+                if not found_CELL_PARAMETERS and "CELL_PARAMETERS" not in line:
+                    continue
+                elif not found_CELL_PARAMETERS and "CELL_PARAMETERS" in line:
+                    if "angstrom" in line:
+                        convertunit = 1.0
+                    elif "bohr" in line:
+                        convertunit = Bohr2Ang
+                    found_CELL_PARAMETERS = True
+                    continue
+                if found_CELL_PARAMETERS and read_times < 3:
+                    for x in line.strip().split():
+                        cellpara.append(float(x))
+                    list_cellpara.append(np.dot(cellpara, convertunit))
+                    read_times += 1
+                else:
+                    break
+            elif ibrav == 4:
+                if "A =" in line or "A=" in line:
+                    A = float(re.findall(r"\d+\.\d*|\d+", line)[0])
+                    print(A)
+                if "C =" in line or "C=" in line:
+                    C = float(re.findall(r"\d+\.\d*|\d+", line)[0])
+                if "celldm(1)" in line:
+                    celldm1 = float(re.findall(r"\d+\.\d*|\d+", line)[0])
+                if "celldm(3)" in line:
+                    celldm3 = float(re.findall(r"\d+\.\d*|\d+", line)[0])
+                if A != 0 and C != 0:
+                    list_cellpara = [[A, 0.0, 0.0], \
+                        [-0.5*A, np.sqrt(3)/2.0*A, 0.0], [0.0, 0.0, C]]
+                    break
+                if celldm1 != 0 and celldm3 != 0:
+                    a = celldm1 * Bohr2Ang
+                    c = celldm1 * celldm3 * Bohr2Ang
+                    list_cellpara = [[a, 0.0, 0.0], \
+                        [-0.5*a, np.sqrt(3)/2.0*a, 0.0], [0.0, 0.0, c]]
+                    break
     elif ".out" in dir_f:
         for line in lines:
-            axes = []
+            cellpara = []
             if not got_celldm and "celldm(1)" not in line:
                 continue
             elif not got_celldm and "celldm(1)" in line:
@@ -148,13 +173,13 @@ def extract_cellpara(dir_f):
                 continue
             elif found_CELL_PARAMETERS and read_times < 3:
                 for x in re.findall(r"[+-]?\d+\.\d*", line):
-                    axes.append(float(x))
+                    cellpara.append(float(x))
                 # get CELL_PARAMETERS and convert unit at the same time
-                list_cellpara.append(np.dot(np.asarray(axes), \
-                    std_celldm*Bohr2Ang))
+                list_cellpara.append(np.dot(cellpara, std_celldm*Bohr2Ang))
                 read_times += 1
             else:
                 break
+    #print(list_cellpara)
     return(list_cellpara)
 
 

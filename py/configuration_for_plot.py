@@ -42,7 +42,7 @@ def view_3d(x, y, z, **kwargs):
         (r, x0, y0, z0) = kwargs.get("circle")
         x1 = r * np.cos(alpha) + x0
         y1 = r * np.sin(alpha) + y0
-        z1 = 0.0
+        z1 = 10
         ax.plot(x1, y1, z1)
     else:
         print("Tip: if you want to show circle with defects as center, " +

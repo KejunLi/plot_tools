@@ -155,7 +155,8 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
     after fractional crystal coordinates so that the positions of those atoms
     will be fixed, and those in the circle will still be free
     return:
-    (new_list_atompos, list_atom_coord, list_defect_coord, max_d)
+    (list_atom, new_list_atompos, list_atom_coord, list_defect_coord, max_d)
+    type(list_atom) = list
     new_list_atompos = [[atompos1], [atompos2], [atompos3], ...]
     type(atompos1) = list
     list_atom_coord = [[atomcoord1], [atomcoord2], [atomcoord3], ...]
@@ -247,7 +248,8 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
                     continue
     else:
         new_list_atompos = temp_new_list_atompos[0]
-    return(new_list_atompos, list_atom_coord, list_defect_coord, max_d)
+    return(list_atom, new_list_atompos, list_atom_coord, list_defect_coord, \
+        max_d)
 
 
 
