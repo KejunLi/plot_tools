@@ -6,12 +6,12 @@ from general_functions import fix_atompos, read_vasp
 from mpl_toolkits.mplot3d import Axes3D
 
 ############################## Input ###########################################
-dir_f = "/home/likejun/work/hBN/Ti/9x9/nonradiative/relax-gs/relax.out"
+dir_f = "/home/likejun/work/hBN/Ti/9x9/nonradiative/relax-gs/relax.in"
 dir_f_pristine = "/home/likejun/work/hBN/bulk_hBN_supercell/mp-984_BN/tibn_9x9.vasp"
-radius = 0.4
+radius = 0.2
 ################################################################################
 (list_atom, list_atompos, list_atom_coord, list_defect_coord, max_d) = \
-fix_atompos(dir_f, radius, "Ti", fix_x=True, fix_y=True, fix_z=True)
+fix_atompos(dir_f, radius, "Ti", fix_x=True, fix_y=True)
 (list_atompos1, list_atom_coord1) = read_vasp(dir_f_pristine)
 number_of_atoms = len(list_atompos)
 #print(np.array(list_atompos))

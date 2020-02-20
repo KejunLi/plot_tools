@@ -6,13 +6,13 @@ import numpy as np
 import re
 import os
 from configuration_for_plot import config_plot
-from sort_files import files_in_dir, sort_var_and_f
-from extraction import extract_etot, extract_aps, extract_cellpara
+from sort_files import sort_var_and_f
+from extraction import extract_etot
 from fitting import quadratic_fct, best_vals_of_quadratic_fct
-from general_functions import cal_dQ
+from general_functions import get_dQ_from_scf
 
 ################################### Input ######################################
-directory = "/home/likejun/work/hBN/Ti/7x7/c1/nonradiative"
+directory = "/home/likejun/work/tibn/tibn_oncv_c1/8x8/nonradiative"
 min_x = -5; max_x = 5
 min_y = -0.05; max_y = 0.8
 label = ["TiBN (gs)", "TiBN (ex)"] # label the two curves
@@ -26,51 +26,7 @@ right_arrow = 2 # move right arrow to right
 elong_arrow = 1 # elongate the two arrow
 ################################################################################
 
-# this part looks for all the scf.out files and save in the list
-# for ground state and excited state, respectively.
-list_dir_lin = []
-list_dir_ratio = []
-set_dir_scfin = []
-set_dir_scfout = []
-list_dir_lin = files_in_dir(directory, "lin")[1]
-for dir_lin in list_dir_lin:
-    list_dir_ratio.append(files_in_dir(dir_lin, "ratio-")[1])
-# print(dir_ratio)
-for dir_ratio in list_dir_ratio:
-    list_dir_scfout_temp = []
-    list_dir_scfin_temp = []
-    for dir_ratio_i in dir_ratio:
-        list_dir_scfin_temp.append(files_in_dir(dir_ratio_i, "scf.in")[1][0])
-        list_dir_scfout_temp.append(files_in_dir(dir_ratio_i, "scf.out")[1][0])
-    set_dir_scfin.append(list_dir_scfin_temp)
-    set_dir_scfout.append(list_dir_scfout_temp)
-# print(dir_f)
-
-# calculate dQ
-set_atom = []
-set_atompos = []
-# look for CELL_PARAMETERS from output
-for dir_f in set_dir_scfout[0]:
-    if "ratio-0.0000" in dir_f or "ratio-1.0000" in dir_f:
-        list_cellpara = np.asarray(extract_cellpara(dir_f))
-# look for atomic positions from scf.in
-for dir_f in set_dir_scfin[0]:
-    if "ratio-0.0000" in dir_f or "ratio-1.0000" in dir_f:
-        list_atom = extract_aps(dir_f)[0]
-        list_atompos = extract_aps(dir_f)[1]
-        set_atom.append(list_atom)
-        set_atompos.append(np.asarray(list_atompos))
-set_dQ2 = []
-for i in range(len(set_atompos)):
-    for j in range(len(set_atompos[i])):
-        (x0, y0, z0) = np.matmul(set_atompos[i][j], list_cellpara)
-        (xi, yi, zi) = np.matmul(set_atompos[i+1][j], list_cellpara)
-        dQi = cal_dQ(xi-x0, yi-y0, zi-z0, set_atom[i][j])
-        set_dQ2.append(dQi**2)
-    break
-dQ = np.sqrt(sum(set_dQ2))
-print(dQ)
-
+(set_dir_scfout, dQ) = get_dQ_from_scf(directory)
 # this part refines the scf.out files and extracts
 # the ratio of linear extrapolation and corresponding total energies
 set_etot = []
@@ -119,12 +75,13 @@ E_zpl = float(format(sec_min_etot - min_etot, ".5f"))
 E_rel = float(format(sec_max_etot - min_etot, ".5f"))
 E_abs = float(format(max_etot - min_etot, ".5f"))
 E_em = float(format(sec_min_etot - sec_max_etot, ".5f"))
+print("Data from calculation:")
 print("E_zpl = {} eV".format(E_zpl)) # ZPL
 print("E_rel = {} eV".format(E_rel)) # The energy of gs in es geometry
 print("E_abs = {} eV".format(E_abs)) # absorption
-print("E_em = {} eV".format(E_em)) # emission
+print("E_em = {} eV\n".format(E_em)) # emission
 
-# this part plots
+# this part does plotting
 config_plot()
 #axes = plt.gca()
 #ylim = axes.get_ylim()
@@ -202,6 +159,7 @@ plt.vlines(x_of_sec_min_etot, -10, 10, linestyles="dashed")
 
 E_abs_fix = float(format(max_etot_fix - min_etot_fix, ".5f"))
 E_em_fix = float(format(sec_min_etot_fix - sec_max_etot_fix, ".5f"))
+print("\nData from fitting:")
 print("E_zpl_fix = {} eV".format(E_zpl_fix)) # ZPL
 print("E_rel_fix = {} eV".format(E_rel_fix)) # The energy of gs in es geometry
 print("E_abs_fix = {} eV".format(E_abs_fix)) # absorption
