@@ -71,7 +71,7 @@ def crystal_coord_to_cartesian_coord(a, b, c, u, v, w):
 
 
 def energy_level(list_E_spinu, list_E_spind, list_occ_spinu, list_occ_spind,
-        lowerlimit, upperlimit, distance):
+        lowerlimit, upperlimit):
     """
     post process the extracted energy levels of both spin up and spin down
     find the vbm, cbm and corresponding level numbers
@@ -81,25 +81,7 @@ def energy_level(list_E_spinu, list_E_spind, list_occ_spinu, list_occ_spind,
     the input is the list of spinup energies, spindown energies, occupations of
     spinup, occupations of spindown, range of energy levels, and num, which is
     the distance between Fermi level and vbm (Fermi level is lower than vbm)
-    return:
-    (E_spinu, E_spind, vbm, cbm, fermi)
-    type(E_spinu) = list
-    type(E_spind) = list
-    type(vbm) = float
-    type(cbm) = float
-    type(fermi) = float
     """
-    print("Input:")
-    print("1. list of spinup energies (type: array)")
-    print("2. list of spindown energies (type: array)")
-    print("3. list of occupations of spinup")
-    print("4. list of occupations of spindown")
-    print("  -range of energy levels, from")
-    print("5. lowerlimit = ? below vbm")
-    print("  to")
-    print("6. upperlimit = ? above vbm")
-    print("7. distance between vbm and fermi level\n")
-
     for i, occupation in enumerate(list_occ_spinu):
         if occupation == 0:
             HO_spinu = i - 1
@@ -116,20 +98,10 @@ def energy_level(list_E_spinu, list_E_spind, list_occ_spinu, list_occ_spind,
     # find vbm, cbm and fermi level
     if list_E_spinu[HO_spinu] >= list_E_spind[HO_spind]:
         vbm = list_E_spinu[HO_spinu]
-        # find fermi level if vbm is in spinup
-        if list_E_spinu[HO_spinu-distance] <= list_E_spind[HO_spinu-distance]:
-            fermi = list_E_spind[HO_spinu-distance]
-        else:
-            fermi = list_E_spinu[HO_spinu-distance]
         print("spin up")
         print("No.{} highest occupied state {} eV".format(HO_spinu, vbm))
     else:
         vbm = list_E_spind[HO_spind]
-        # find fermi level if vbm is in spindown
-        if list_E_spinu[HO_spind-distance] <= list_E_spind[HO_spind-distance]:
-            fermi = list_E_spind[HO_spind-distance]
-        else:
-            fermi = list_E_spinu[HO_spind-distance]
         print("spin down")
         print("No.{} highest occupied state {} eV".format(HO_spind, vbm))
 
@@ -144,7 +116,9 @@ def energy_level(list_E_spinu, list_E_spind, list_occ_spinu, list_occ_spind,
     # obtain the range of energy levels
     E_spinu = list_E_spinu[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
     E_spind = list_E_spind[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
-    return(E_spinu, E_spind, vbm, cbm, fermi)
+    occ_spinu = list_occ_spinu[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
+    occ_spind = list_occ_spind[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
+    return(E_spinu, E_spind, occ_spinu, occ_spind, vbm, cbm)
 
 
 def fix_atompos(dir_f, radius, defect, **kwargs):

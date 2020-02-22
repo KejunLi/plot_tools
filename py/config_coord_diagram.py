@@ -12,7 +12,7 @@ from fitting import quadratic_fct, best_vals_of_quadratic_fct
 from general_functions import get_dQ_from_scf
 
 ################################### Input ######################################
-directory = "/home/likejun/work/tibn/tibn_oncv_c1/8x8/nonradiative"
+directory = "/home/likejun/work/tibn/tibn_oncv_c1/10x10/nonradiative"
 min_x = -5; max_x = 5
 min_y = -0.05; max_y = 0.8
 label = ["TiBN (gs)", "TiBN (ex)"] # label the two curves
