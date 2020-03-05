@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import matplotlib.pyplot as plt
+import numpy as np
+from configuration_for_plot import config_plot
+from extraction import extract_eps, extract_filename
+from sort_files import files_in_dir, sort_var_and_f
+
+################################### Input ######################################
+directory = "/home/likejun/work/tibn/tibn_oncv_c1/6x6/nonradiative/yambo/exciton_using_yambo4.4/data"
+################################################################################
+
+dir_f = files_in_dir(directory, "o-bse.exc_amplitude")[1]
+config_plot()
+
+for i in dir_f:
+    data = np.genfromtxt(i, dtype=None)
+    print(data)
+    E = data[:, 0]
+    eps_im = data[:, 1]
+
+
+
+    plt.plot(E, eps_im, marker="o", markersize=1., color="tab:blue", label="(100)")
+
+
+plt.legend(loc = "upper left")
+plt.xlabel("E (eV)")
+plt.title("6x6")
+plt.ylabel("Im(${\u03B5}$)")
+plt.show()

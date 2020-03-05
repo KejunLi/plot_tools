@@ -10,20 +10,21 @@ from sort_files import sort_var_and_f
 from extraction import extract_etot
 from fitting import quadratic_fct, best_vals_of_quadratic_fct
 from general_functions import get_dQ_from_scf
+from constants import *
 
 ################################### Input ######################################
-directory = "/home/likejun/work/tibn/tibn_oncv_c1/10x10/nonradiative"
-min_x = -5; max_x = 5
+directory = "/home/likejun/work/tibn/re_tibn_oncv_c1/6x6/nonradiative"
+min_x = -1.8; max_x = 2.2
 min_y = -0.05; max_y = 0.8
 label = ["TiBN (gs)", "TiBN (ex)"] # label the two curves
-label1_pos = [1,0.2]
-label2_pos = [0,0.5]
-title = "TiBN"
-lieft_shift_E_zpl = 3.5 # shift label of ZPL
-right_shift_E_rel = 1.2 # shift label of E_rel
-left_arrow = 2 # move left arrow to left
-right_arrow = 2 # move right arrow to right
-elong_arrow = 1 # elongate the two arrow
+label1_pos = [0.8,0.2]
+label2_pos = [-0.55,0.6]
+title = "6x6"
+lieft_shift_E_zpl = 8 # shift label of ZPL
+right_shift_E_rel = 4 # shift label of E_rel
+left_arrow = 5 # move left arrow to left
+right_arrow = 3 # move right arrow to right
+elong_arrow = 1.5 # elongate the two arrow
 ################################################################################
 
 (set_dir_scfout, dQ) = get_dQ_from_scf(directory)
@@ -109,12 +110,12 @@ for i in range(len(set_etot)):
         plt.text(label1_pos[0], label1_pos[1], label[0])
 
         x = np.arange(min_x, max_x, 0.001)
-        y = []
+        y_gs = []
         for k in range(len(x)):
             y_temp = quadratic_fct(x[k], best_vals[0], best_vals[1],\
             best_vals[2]) - min_etot
-            y.append(y_temp)
-        plt.plot(x, y, linewidth=2, color="tab:blue")
+            y_gs.append(y_temp)
+        plt.plot(x, y_gs, linewidth=2, color="tab:blue")
 
 for i in range(len(set_etot)):
     if min(set_etot[i]) - sec_min_etot == 0.0:
@@ -136,12 +137,12 @@ for i in range(len(set_etot)):
         plt.text(label2_pos[0], label2_pos[1], label[1])
 
         x = np.arange(min_x, max_x, 0.001)
-        y = []
+        y_ex = []
         for k in range(len(x)):
             y_temp = quadratic_fct(x[k], best_vals[0], best_vals[1],\
             best_vals[2]) - min_etot
-            y.append(y_temp)
-        plt.plot(x, y, linewidth=2, color="tab:red")
+            y_ex.append(y_temp)
+        plt.plot(x, y_ex, linewidth=2, color="tab:red")
     for j in range(len(set_etot[i])):
         etot = set_etot[i][j]-min_etot
         if min(set_etot[i]) - min_etot == 0.0:
@@ -163,7 +164,19 @@ print("\nData from fitting:")
 print("E_zpl_fix = {} eV".format(E_zpl_fix)) # ZPL
 print("E_rel_fix = {} eV".format(E_rel_fix)) # The energy of gs in es geometry
 print("E_abs_fix = {} eV".format(E_abs_fix)) # absorption
-print("E_em_fix = {} eV".format(E_em_fix)) # emission
+print("E_em_fix = {} eV\n".format(E_em_fix)) # emission
+
+
+y_intersection = min(np.array(y_ex)-np.array(y_gs))
+E_barrier = float(format(y_intersection - min(y_ex), ".6f"))
+# estimated transition rate through energy barrier
+rate_eff = np.power(10.0,12) * np.exp(-E_barrier*ev2J/(kB*T_room))
+time_eff = 1.0/rate_eff
+rate_eff = "{:e}".format(rate_eff, ".5f")
+time_eff = "{:e}".format(time_eff, ".5f")
+print("E_barrier = {} eV".format(E_barrier))
+print("rate_eff = {} s^-1".format(rate_eff))
+print("time_eff = {} s".format(time_eff))
 
 plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
 plt.ylabel("E (eV)")

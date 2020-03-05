@@ -305,4 +305,5 @@ def get_dQ_from_scf(directory):
             set_dQ2.append(dQi**2)
         break
     dQ = np.sqrt(sum(set_dQ2))
+    print("ΔQ = {}".format(dQ))
     return(set_dir_scfout, dQ)

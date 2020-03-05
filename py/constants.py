@@ -10,6 +10,7 @@ Electron2Coulomb = 1.60217662e-19
 Ha2J = Ha2eV * Electron2Coulomb
 Ang2m = 1e-10
 Bohr2m = 0.52917720859E-10
+ev2J = Electron2Coulomb
 
 Ang2Bohr = Ang2m / Bohr2m
 Bohr2Ang = Bohr2m / Ang2m
@@ -26,3 +27,7 @@ second2au = 1/2.418884326505e-17
 THz2cmm1 = 33.35643
 THzOrd2meV = 4.13566903434377990
 THzAng2meV = 4.13566903434377990 / 2*pi
+
+#Boltzmann constant
+kB = 1.38064852E-23
+T_room = 300
