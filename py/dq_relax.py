@@ -7,13 +7,13 @@ from extraction import extract_aps, extract_cellpara
 from general_functions import cal_dQ
 
 ################################### Input ######################################
-directory = "/home/likejun/work/tibn/re_tibn_oncv_c1/11x11/nonradiative"
+directory = "/home/likejun/work/mobn/mobn_oncv_c1/11x11/nonradiative"
 xlabel = "x ($\AA$)"
 ylabel = "y ($\AA$)"
 zlabel = "\u0394Q (amu$^{1/2}$$\AA$)"
-xlim = None
-ylim = None
-zlim = None
+xlim = [-13,26]
+ylim = [-1,25]
+zlim = [0,4.1]
 title = None
 ################################################################################
 

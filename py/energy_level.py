@@ -8,7 +8,7 @@ from extraction import extract_eigenenergy
 from general_functions import energy_level
 
 #################################### Input #####################################
-directory = "/home/likejun/work/tibn/re_tibn_oncv_c1/6x6/nonradiative/relax-gs"
+directory = "/home/likejun/work/mobn/mobn_oncv_c1/6x6/nonradiative/relax-gs"
 # Fermi level, the highest occupied level whose wavefunction is delocalized,
 # is num of levels below the vbm
 ################################################################################

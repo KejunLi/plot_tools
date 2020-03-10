@@ -13,15 +13,15 @@ from general_functions import get_dQ_from_scf
 from constants import *
 
 ################################### Input ######################################
-directory = "/home/likejun/work/tibn/re_tibn_oncv_c1/6x6/nonradiative"
-min_x = -1.8; max_x = 2.2
-min_y = -0.05; max_y = 0.8
-label = ["TiBN (gs)", "TiBN (ex)"] # label the two curves
+directory = "/home/likejun/work/mobn/mobn_oncv_c1/6x6/nonradiative"
+min_x = -1.8; max_x = 9
+min_y = -0.05; max_y = 1.51
+label = ["MoBN (gs)", "MoBN (ex)"] # label the two curves
 label1_pos = [0.8,0.2]
-label2_pos = [-0.55,0.6]
+label2_pos = [0.5,1.2]
 title = "6x6"
-lieft_shift_E_zpl = 8 # shift label of ZPL
-right_shift_E_rel = 4 # shift label of E_rel
+lieft_shift_E_zpl = 12 # shift label of ZPL
+right_shift_E_rel = 6 # shift label of E_rel
 left_arrow = 5 # move left arrow to left
 right_arrow = 3 # move right arrow to right
 elong_arrow = 1.5 # elongate the two arrow
@@ -167,8 +167,10 @@ print("E_abs_fix = {} eV".format(E_abs_fix)) # absorption
 print("E_em_fix = {} eV\n".format(E_em_fix)) # emission
 
 
-y_intersection = min(np.array(y_ex)-np.array(y_gs))
-E_barrier = float(format(y_intersection - min(y_ex), ".6f"))
+y_diff = min(np.abs(np.array(y_ex)-np.array(y_gs)))
+for i in range(len(x)):
+    if np.abs(y_ex[i] - y_gs[i]) == y_diff:
+        E_barrier = float(format(y_ex[i] - min(y_ex), ".6f"))
 # estimated transition rate through energy barrier
 rate_eff = np.power(10.0,12) * np.exp(-E_barrier*ev2J/(kB*T_room))
 time_eff = 1.0/rate_eff
