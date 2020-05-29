@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 from configuration_for_plot import config_plot
 from extraction import extract_eps, extract_filename
 from sort_files import files_in_dir, sort_var_and_f
 
 ################################### Input ######################################
-directory = "/home/likejun/work/tibn/nk331/re_tibn_oncv_c1/6x6/nonradiative/yambo/data"
+directory = "/home/likejun/OSZICAR"
 ################################################################################
+dir_f=directory
+#dir_f = files_in_dir(directory, "OSZICAR")[1][0]
 
-dir_f = files_in_dir(directory, "o-y.exc_amplitude_at_2")[1]
+data = np.genfromtxt(dir_f, dtype=float)
+
+estep = data[:, 1]
+logE = np.sign(data[:, 3])*np.log(abs(data[:, 3]))
+
 config_plot()
 
-data = np.genfromtxt(dir_f[0], dtype=None)
-#data = np.genfromtxt(i, dtype=None)
-print(data)
-E = data[:, 0]
-eps_im = data[:, 1]
-plt.plot(E, eps_im, color="tab:blue")
-plt.xlabel("E (eV)")
-plt.ylabel("Amplitude")
+plt.plot(estep, logE, marker="o", markersize=2., color="tab:blue")
+plt.xlabel('eletronic step')
+plt.ylabel('sign(dE)*log|dE|')
 plt.show()

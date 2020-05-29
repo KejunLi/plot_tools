@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 from configuration_for_plot import config_plot, view_3d
 from sort_files import files_in_dir, sort_var_and_f
 from extraction import extract_aps, extract_cellpara
 from general_functions import cal_dQ
 
 ################################### Input ######################################
-directory = "/home/likejun/work/mobn/mobn_oncv_c1/11x11/nonradiative"
+directory = "/home/likejun/work/tibn/tibn_oncv_c1/11x11/nonradiative"
 xlabel = "x ($\AA$)"
 ylabel = "y ($\AA$)"
 zlabel = "\u0394Q (amu$^{1/2}$$\AA$)"
 xlim = [-13,26]
 ylim = [-1,25]
-zlim = [0,4.1]
+zlim = [0,1.8]
 title = None
 ################################################################################
 
@@ -58,7 +59,8 @@ for i in range(len(set_atompos)):
         dQ = cal_dQ(xi-x0, yi-y0, zi-z0, set_atom[i][j])
         set_dQ.append(dQ)
         set_dQ2.append(dQ**2)
-    print("\u0394Q (amu^1/2/A) = {}".format(np.sqrt(sum(set_dQ2))))
+    sys.stdout.write("\u0394Q (amu^1/2/A) = {}".format(np.sqrt(sum(set_dQ2))))
+    sys.stdout.flush()
 
     view_3d(set_x0, set_y0, set_dQ, xlabel=xlabel, ylabel=ylabel, zlabel=zlabel,
             xlim=xlim, ylim=ylim, zlim=zlim,

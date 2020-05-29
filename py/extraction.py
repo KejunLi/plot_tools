@@ -245,8 +245,7 @@ def extract_aps(dir_f):
 
 def extract_eigenenergy(dir_f):
     """
-    this function is used to extract eigenenergy and occupations at Gamma point
-    near valence band maximum (VBM) and conduction band minimum (CBM)
+    this function is used to extract eigenenergies and occupations at Gamma point
     return:
     list_all = [list_E_spinup, list_E_spindown, list_occ_spinup,
             list_occ_spindown]

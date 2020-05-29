@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 from configuration_for_plot import config_plot, view_3d
 from sort_files import files_in_dir, sort_var_and_f
 from extraction import extract_aps, extract_cellpara
@@ -90,7 +91,9 @@ for i in range(len(set_atompos)):
                 set_dQ.append(dQ)
                 set_dQ2.append(dQ**2)
             if j == 12:
-                print("\u0394Q (amu^1/2/A) = {}".format(np.sqrt(sum(set_dQ2))))
+                sys.stdout.write("\u0394Q (amu^1/2/A) = {}"\
+                .format(np.sqrt(sum(set_dQ2))))
+                sys.stdout.flush()
 
                 view_3d(set_x0, set_y0, set_dQ,
                         xlabel=xlabel, ylabel=ylabel, zlabel=zlabel,

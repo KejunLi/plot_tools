@@ -3,6 +3,7 @@ import numpy as np
 import re
 from extraction import extract_aps, extract_cellpara
 from sort_files import files_in_dir
+import sys
 
 
 def interpolate(inp, new_length):
@@ -79,8 +80,7 @@ def energy_level(list_E_spinu, list_E_spind, list_occ_spinu, list_occ_spind,
     vinicity of vbm
 
     the input is the list of spinup energies, spindown energies, occupations of
-    spinup, occupations of spindown, range of energy levels, and num, which is
-    the distance between Fermi level and vbm (Fermi level is lower than vbm)
+    spinup, occupations of spindown and range of energy levels
     """
     for i, occupation in enumerate(list_occ_spinu):
         if occupation == 0:
@@ -93,32 +93,34 @@ def energy_level(list_E_spinu, list_E_spind, list_occ_spinu, list_occ_spind,
             LU_spind = i
             break
 
-    print("Plot energy levels from {} to {}."\
-        .format(HO_spinu-lowerlimit, HO_spinu+upperlimit))
+    sys.stdout.write("Plot energy levels from {} to {}."\
+        .format(HO_spinu+1-lowerlimit, HO_spinu+upperlimit))
     # find vbm, cbm and fermi level
     if list_E_spinu[HO_spinu] >= list_E_spind[HO_spind]:
         vbm = list_E_spinu[HO_spinu]
-        print("spin up")
-        print("No.{} highest occupied state {} eV".format(HO_spinu, vbm))
+        sys.stdout.write("\rspin up {}: the highest occupied state {} eV"\
+        .format(HO_spinu+1, vbm))
     else:
         vbm = list_E_spind[HO_spind]
-        print("spin down")
-        print("No.{} highest occupied state {} eV".format(HO_spind, vbm))
+        sys.stdout.write("\rspin down {}: the highest occupied state {} eV"\
+        .format(HO_spind+1, vbm))
 
     if list_E_spinu[LU_spinu] <= list_E_spind[LU_spind]:
         cbm = list_E_spinu[LU_spinu]
-        print("spin up")
-        print("No.{} lowest unoccupied state {} eV".format(LU_spinu, cbm))
+        sys.stdout.write("\rspin up {}: the lowest unoccupied state {} eV"\
+        .format(LU_spinu+1, cbm))
     else:
         cbm = list_E_spind[LU_spind]
-        print("spin down")
-        print("No.{} lowest unoccupied state {} eV".format(LU_spind, cbm))
+        sys.stdout.write("\rspin down {}: the lowest unoccupied state {} eV"\
+        .format(LU_spind+1, cbm))
+    sys.stdout.flush()
     # obtain the range of energy levels
     E_spinu = list_E_spinu[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
     E_spind = list_E_spind[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
     occ_spinu = list_occ_spinu[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
     occ_spind = list_occ_spind[range(HO_spinu-lowerlimit, HO_spinu+upperlimit)]
-    return(E_spinu, E_spind, occ_spinu, occ_spind, vbm, cbm)
+    bands_range = np.array(range(HO_spinu+1-lowerlimit, HO_spinu+1+upperlimit))
+    return(E_spinu, E_spind, occ_spinu, occ_spind, bands_range, vbm, cbm)
 
 
 def fix_atompos(dir_f, radius, defect, **kwargs):
@@ -139,8 +141,8 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
     list_defect_coord = [[defect_coord1], [defect_coord2], [defect_coord3], ...]
     type(max_d) = float
     """
-    print("Tip: if you want to fix atomic positions of atoms that are out " +
-        "of the circle, which is centered at defects and has " +
+    sys.stdout.write("Tip: to fix atomic positions of atoms " +
+        "that are out of the circle, which is centered at defects and has " +
         "radius {}, ".format(radius) + "specify 'fix_pos = fix_x " +
         "(or fix_y, fix_z)' from the input")
     list_cellpara = extract_cellpara(dir_f)
@@ -171,7 +173,6 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
             z2 = np.power(list_atom_coord[j][2]-list_atom_coord[i][2], 2.0)
             d = np.sqrt(np.power(d, 2.0)-z2)
             temp_list_distance.append(d)
-            #print(d)
         list_distance.append(temp_list_distance)
     max_d = max(np.array(list_distance).flatten())
 
@@ -203,14 +204,6 @@ def fix_atompos(dir_f, radius, defect, **kwargs):
                         list_atompos[j].append(1)
                 else:
                     list_atompos[j].append(1)
-                """
-                print(j, "{} ".format(list_atom[j]) + "is outside of " +
-                    "the circle, and its atomic positions are fixed")
-            else:
-                print(j, "{} ".format(list_atom[j]) + "is within the circle " +
-                    "around defect {}, ".format(list_atom[list_defect_num[i]]) +
-                    "and its atomic position are not fixed")
-                """
             temp_list_atompos.append(list_atompos[j])
         temp_new_list_atompos.append(temp_list_atompos)
 
@@ -269,7 +262,7 @@ def get_dQ_from_scf(directory):
     list_dir_lin = files_in_dir(directory, "lin")[1]
     for dir_lin in list_dir_lin:
         list_dir_ratio.append(files_in_dir(dir_lin, "ratio-")[1])
-    # print(dir_ratio)
+    # sys.stdout.write(dir_ratio)
     for dir_ratio in list_dir_ratio:
         list_dir_scfout_temp = []
         list_dir_scfin_temp = []
@@ -280,7 +273,7 @@ def get_dQ_from_scf(directory):
                         files_in_dir(dir_ratio_i, "scf.out")[1][0])
         set_dir_scfin.append(list_dir_scfin_temp)
         set_dir_scfout.append(list_dir_scfout_temp)
-    # print(dir_f)
+    # sys.stdout.write(dir_f)
 
     # calculate dQ
     set_atom = []
@@ -305,5 +298,6 @@ def get_dQ_from_scf(directory):
             set_dQ2.append(dQi**2)
         break
     dQ = np.sqrt(sum(set_dQ2))
-    print("ΔQ = {}".format(dQ))
+    sys.stdout.write("ΔQ = {}".format(dQ))
+    sys.stdout.flush()
     return(set_dir_scfout, dQ)
