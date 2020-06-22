@@ -13,6 +13,10 @@ class qe_post_processing:
     ============================================================================
     +   1. Constructor
     +   Attributes:
+    +   self.fname (the specific directory to the file)
+    +   self.dir (the directory which contains the file)
+    +   self.qe_out (read the file)
+    +   self.lines (lines in the file)
     +   self.atomic_species (atomic species with mass)
     +   self.nat (number of atoms)
     +   self.ntyp (number of atomic types)
@@ -27,7 +31,7 @@ class qe_post_processing:
     +
     +   No return
     ============================================================================
-    +   2. Method read_eigenenergies
+    +   2. Method read_eigenenergies(self)
     +   Attributes:
     +   self.eigenE (eigenenergies, eV)
     +   self.occ (occupations)
@@ -35,14 +39,14 @@ class qe_post_processing:
     +
     +   return(self.eigenE, self.occ)
     ============================================================================
-    +   3. Method read_bandgap
+    +   3. Method read_bandgap(self)
     +   Attributes:
     +   self.direct_gap (direct bandgaps, eV)
     +   self.indirect_gap (indirect bandgap, eV)
     +
     +   No return
     ============================================================================
-    +   4. Method read_atomic_pos
+    +   4. Method read_atomic_pos(self)
     +   Attributes:
     +   self.atoms (atomic name associated with each atomic position)
     +   self.atomic_pos (atomic positions in fractional crystal coordinates)
@@ -295,7 +299,7 @@ class qe_post_processing:
                     (self.kpoints_cryst_coord, self.kpoints_cryst_coord)
                     )
 
-            assert self.nk < self.up_ne or self.nk < self.dn_ne, \
+            assert self.nbnd > self.up_ne and self.nbnd > self.dn_ne, \
                 "No empty band ゴ~ゴ~ゴ~ゴ~"
 
             for i in range(nk_spin):
@@ -317,24 +321,26 @@ class qe_post_processing:
             self.indirect_gap = min(indirect_gap_up, indirect_gap_dn)
 
             if self.indirect_gap == indirect_gap_up:
-                index_k_cbm = np.where(self.eigenE[:, int(self.up_ne)] == \
-                                    np.amin(self.eigenE[:, int(self.up_ne)])
+                cbm = np.amin(self.eigenE[:, int(self.up_ne)])
+                vbm = np.amax(self.eigenE[:, int(self.up_ne-1)])
+                index_k_cbm = np.where(self.eigenE[:, int(self.up_ne)] == cbm
                                         )[0][0]
-                index_k_vbm = np.where(self.eigenE[:, int(self.up_ne-1)] == \
-                                    np.amax(self.eigenE[:, int(self.up_ne-1)])
+                index_k_vbm = np.where(self.eigenE[:, int(self.up_ne-1)] == vbm
                                         )[0][0]
             else:
-                index_k_cbm = np.where(self.eigenE[:, int(self.dn_ne)] == \
-                                    np.amin(self.eigenE[:, int(self.dn_ne)])
+                cbm = np.amin(self.eigenE[:, int(self.dn_ne)])
+                vbm = np.amax(self.eigenE[:, int(self.dn_ne-1)])
+                index_k_cbm = np.where(self.eigenE[:, int(self.dn_ne)] == cbm
                                         )[0][0]
-                index_k_vbm = np.where(self.eigenE[:, int(self.dn_ne-1)] == \
-                                    np.amax(self.eigenE[:, int(self.dn_ne-1)])
+                index_k_vbm = np.where(self.eigenE[:, int(self.dn_ne-1)] == vbm
                                         )[0][0]
 
         else:
             self.direct_gap = np.zeros(self.nk, dtype=float)
+            kpoints = np.zeros((self.nk, 3), dtype=float)
+            kpoints = self.kpoints_cryst_coord
 
-            assert self.nk < self.ne/2, "No empty band ゴ~ゴ~ゴ~ゴ~"
+            assert self.nbnd > self.ne/2, "No empty band ゴ~ゴ~ゴ~ゴ~"
 
             for i in range(self.nk):
                 self.direct_gap[i] = self.eigenE[i, int(self.ne/2)] - \
@@ -344,20 +350,20 @@ class qe_post_processing:
                                 np.amin(self.eigenE[:, int(self.ne/2)]) - \
                                 np.amax(self.eigenE[:, int(self.ne/2-1)])
                                 )
-            index_k_cbm = np.where(self.eigenE[:, int(self.ne/2)] == \
-                                np.amin(self.eigenE[:, int(self.ne/2)])
+            cbm = np.amin(self.eigenE[:, int(self.ne/2)])
+            vbm = np.amax(self.eigenE[:, int(self.ne/2-1)])
+            index_k_cbm = np.where(self.eigenE[:, int(self.ne/2)] == cbm
                                     )[0][0]
-            index_k_vbm = np.where(self.eigenE[:, int(self.ne/2-1)] == \
-                                np.amax(self.eigenE[:, int(self.ne/2-1)])
+            index_k_vbm = np.where(self.eigenE[:, int(self.ne/2-1)] == vbm
                                     )[0][0]
 
         k_cbm = kpoints[index_k_cbm]
         k_vbm = kpoints[index_k_vbm]
 
-        sys.stdout.write("No.{} K point where CBM is: {}\n"\
-                        .format(index_k_cbm, k_cbm))
-        sys.stdout.write("No.{} K point where VBM is: {}\n"\
-                        .format(index_k_vbm, k_vbm))
+        sys.stdout.write("CBM = {} eV is at No.{} K point: {}\n"\
+                        .format(cbm, index_k_cbm, k_cbm))
+        sys.stdout.write("VBM = {} eV is at No.{} K point: {}\n"\
+                        .format(vbm, index_k_vbm, k_vbm))
         sys.stdout.write("Bandgap = {} eV\n".format(self.indirect_gap))
         sys.stdout.write("Direct bandgap: {}\n".format(self.direct_gap))
         sys.stdout.flush()
@@ -383,6 +389,7 @@ class qe_post_processing:
         self.ap_cart_coord = np.zeros((self.nat, 3), dtype=float)
         self.cryst_axes = np.zeros((3, 3), dtype=float)
         self.R_axes = np.zeros((3, 3), dtype=float)
+        is_geometry_optimized = False
 
         for i, line in enumerate(self.lines):
             if "celldm(1)=" in line:
@@ -396,55 +403,67 @@ class qe_post_processing:
                 self.cryst_axes = self.cryst_axes * celldm1
                 self.R_axes = self.R_axes / celldm1
             if "End of BFGS Geometry Optimization" in line:
+                is_geometry_optimized = True
                 for j in range(self.nat):
                     self.atoms[j] = self.lines[i+6+j].strip("\n").split()[0]
                     self.atomic_pos[j] = \
                         self.lines[i+6+j].strip("\n").split()[1:4]
+        if not is_geometry_optimized:
+            raise ValueError("This is not a relax calculation, no updated" +
+                    "atomic positions.")
 
         self.ap_cart_coord = np.matmul(self.atomic_pos, self.cryst_axes)
 
 
 if __name__ == "__main__":
+#===============================================================================
     """
-    dir = "/home/likejun/work/pristine_hbn/1x1/qe_convergence/pbe0/nk"
-    dir1 = files_in_dir(dir, "dnk")[1]
+    dir = "/home/likejun/qe_convergence/ecut"
+    dir1 = files_in_dir(dir, "decut")[1]
     sdir = sort_var_and_f(dir1)[1]
     dir_f = []
     for i in range(len(sdir)):
         dir_f.append(files_in_dir(sdir[i], "out")[1][0])
     gap = np.zeros(len(sdir), dtype=float)
+
     for i in range(len(sdir)):
         qe = qe_post_processing(dir_f[i])
 
         eigenE, occ = qe.read_eigenenergies()
-        directbandgap, idgap = qe.read_bandgap()
+        qe.read_bandgap()
+        idgap = qe.indirect_gap
+        print(idgap)
+        gap[i] = round(idgap, 3)
 
-        gap[i] = idgap
-
-
-    qe = qe_post_processing(dir_f[8])
-    eigenE, occ = qe.read_eigenenergies()
-    bandgap = qe.read_bandgap()
-    print(bandgap)
-
-    """
-    """
     config_plot()
-    plt.plot(np.array(range(len(sdir)))*10+30, gap)
+    # convergence of nk
+    #plt.plot(np.array(range(len(sdir)))*3+3, gap, label="ecutwfc=60 Ry")
+    #plt.scatter(np.array(range(len(sdir)))*3+3, gap)
+
+    # convergence of ecut
+    plt.plot(np.array(range(len(sdir)))*5+30, gap, label="K points 18 x 18 x 1")
+    plt.scatter(np.array(range(len(sdir)))*5+30, gap)
+
+    # convergence of nqx
+    #plt.scatter([2, 3, 6, 9, 18], gap)
     #plt.plot([2, 3, 6, 9, 18], gap, label="K points 18 x 18 x 1, ecutwfc=60 Ry, nqx3=1")
-    #plt.legend()
+
+    plt.legend()
     plt.xlabel("ecutwfc (Ry)")
-    plt.ylabel("$E_{indirect_gap}$ $(eV)$")
+    plt.ylabel("$E_{gap (K → K)}^{PBE}$ $(eV)$")
     #plt.ylim(5.70, 6.13)
     plt.show()
-    """
 
-    dir = "/home/likejun/work/tibn/nk331/tibn_oncv_c1/6x6/nonradiative/relax-gs/relax.out"
+    """
+#===============================================================================
+    dir = "/home/likejun/work/tibn/nk331/tibn_oncv_c1/6x6/nonradiative/relax-cdftup1/relax.out"
     qe = qe_post_processing(dir)
 
     eigenE, occ = qe.read_eigenenergies()
 
     qe.read_bandgap()
     qe.read_atomic_pos()
-    view_3d(qe.ap_cart_coord[:, 0], qe.ap_cart_coord[:, 1], qe.ap_cart_coord[:, 2])
-    plt.show()
+    print(qe.ap_cart_coord)
+    #view_3d(qe.ap_cart_coord[:, 0], qe.ap_cart_coord[:, 1], qe.ap_cart_coord[:, 2])
+    #plt.show()
+#===============================================================================
