@@ -35,7 +35,7 @@ def sort_var_and_f(list_f):
         elif re.findall(r"\d+", f_name):
             raw_var = re.findall(r"\d+", f_name)
         #print(raw_var)
-        var = float(raw_var[0])
+        var = float(raw_var[-1])
         #print(var)
         list_var.append(var)
     #print(list_var)

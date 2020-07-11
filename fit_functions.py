@@ -4,7 +4,7 @@ from scipy.optimize import curve_fit
 import sys
 
 ########################################################################
-# This packages contains functions that are used for fitting data
+# This module contains functions that are used for fitting data
 ########################################################################
 
 def lin_fct(x, c1, c2):

@@ -209,6 +209,7 @@ if __name__ == "__main__":
             cbm[i, j] = yambo.cbm - Vvac + Ef
             vbm[i, j] = yambo.vbm - Vvac + Ef
     print(gap)
+    print(cbm)
     for i in range(len(bands)):
         plt.plot(x, gap[:, i], label=label2[i])
         plt.scatter(x, gap[:, i])

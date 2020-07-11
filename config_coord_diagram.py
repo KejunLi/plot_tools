@@ -10,18 +10,18 @@ from extraction import extract_etot
 from general_functions import get_dQ_from_scf
 
 ################################### Input ######################################
-directory = "/home/likejun/work/singlet-triplet-config-diagram/singlet-gs-4_singlet-es-2"
-xlim = (-1, 3)
-ylim = (-0.05, 0.45)
+directory = "/home/likejun/work/nbvn/nonradiative"
+xlim = (-1.2, 1.8)
+ylim = (-0.1, 3.8)
 arrows = {"left_arrow_shift": 0.15, "right_arrow_shift":0.2,
-        "elongate": 0.002, "E_zpl_shift": 0.3, "E_rel_shift": 0.25}
+        "elongate": 0.005, "E_zpl_shift": 0.3, "E_rel_shift": 0.25}
 labels = {"label1": {"x": 0.8, "y": 0.05, "name": "singlet ES Cs 2"},
         "label2": {"x": -0.8, "y": 0.3, "name": "triplet ES Cs"}
         }
 title = ""
 # 1: no labels, no arrow; 2: labels, no arrows
 # 3: no labels, arrows; 4: labels, arrows
-style = 1
+style = 3
 ###############################################################################
 
 (set_dir_scfout, dQ) = get_dQ_from_scf(directory)
