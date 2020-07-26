@@ -45,3 +45,13 @@ def bndplot(datafile,fermi,symmetryfile,subplot,label):
     subplot.set_ylim([axis[2],axis[3]])
     subplot.set_xlim([axis[0],axis[1]])
     subplot.text((axis[1]-axis[0])/2.0,axis[3]+0.2,label,va='center',ha='center',fontsize=20)
+
+if __name__ == "__main__":
+    datafile = "bands.dat.gnu"  # bandx.dat.gnu 
+    fermi = 6.2564              # eV
+    symmetryfile = "bands.out"  # bandx.out
+    subplot = plt.subplot(111)  # https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.subplot.html
+    label = ""
+
+    bndplot(datafile,fermi,symmetryfile,subplot,label)
+    plt.show()

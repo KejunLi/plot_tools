@@ -10,8 +10,8 @@ from sort_files import files_in_dir, sort_var_and_f
 from var_color import var_color
 
 
-#config_plot()
-
+plt.style.use("/home/likejun/work/github/plot_tools/styles/wamum")
+"""
 #directory = "/home/likejun/work/tibn/nk331/tibn_oncv_c1/6x6/nonradiative/pbe0_exx0.41_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data-scissor" # TiBN
 directory = "/home/likejun/work/mobn/mobn_oncv_c1/6x6/nonradiative/pbe0_gwbse_nk221_nbnd1000_qe6.1_yambo4.4/data" # MoBN
 dir_y = os.path.join(directory, "o-y.alpha_q1_diago_bse")
@@ -76,41 +76,60 @@ ax.set_ylim(-0.5, 12) # MoBN
 ax.legend(fontsize=16)
 plt.draw()
 plt.show()
-
-#===============================================================================
 """
-d = files_in_dir("/home/likejun/work/pristine_hbn/1x1/exx0.41/scf-gs/nk18_nbnd500_qe6.1_yambo4.4/data-12ry", "o-x.alpha_q1_haydock_bse")[1]
-data1 = np.genfromtxt(d[0], dtype=None)
-E1 = data1[:, 0]
-eps_im1 = data1[:, 1]
-eps_im2 = data1[:, 3]
-plt.plot(E1, eps_im2, color="gray", label="GW+IP@PBE0 (pristine hBN)")
-plt.plot(E1, eps_im1, color="tab:blue", label="GW+BSE@PBE0 (pristine hBN)")
+#===============================================================================
 
-
-
-dir_f = files_in_dir("/home/likejun/data", "o-x.eps_q1_haydock_bse")[1]
+dir_f = files_in_dir("/home/likejun/work/pristine_hbn/1x1/exx0.41/scf-gs/nk18_nbnd500_qe6.1_yambo4.4/test", "o-x.alpha_q1_haydock_bse")[1]
 data = np.genfromtxt(dir_f[0], dtype=None)
 E = data[:, 0]
 eps_im = data[:, 1]
 eps_im1 = data[:, 3]
-plt.plot(E, eps_im1, color="tab:purple", label="GW+IP@PBE0 (Mo-hBN nk 2x2x1), x")
-plt.plot(E, eps_im, color="tab:red", label="GW+BSE@PBE0 (Mo-hBN nk 2x2x1), x")
+plt.plot(E, eps_im1, color="gray", label="RPA (pristine hBN, read ndb.QP)")
+plt.plot(E, eps_im, color="black", linestyle="--", label="BSE (pristine hBN, read ndb.QP)")
+
+
+d = files_in_dir("/home/likejun/work/tibn/nk331/tibn_oncv_c1/6x6/nonradiative/pbe0_exx0.41_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data-scissor", "o-y.alpha_q1_diago_bse")[1]
+data1 = np.genfromtxt(d[0], dtype=None)
+E1 = data1[:, 0]
+eps_1 = data1[:, 1]
+eps_2 = data1[:, 3]
+#plt.plot(E1, eps_2, color="tab:blue", label="RPA (Ti-hBN, with scissor)")
+#plt.plot(E1, eps_1, color="tab:red", label="BSE (Ti-hBN, with scissor)")
+
+
+
+dir_f = files_in_dir("/home/likejun/work/mobn/mobn_oncv_c1/6x6/nonradiative/pbe0_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data", "o-y.alpha_q1_diago_bse")[1]
+data = np.genfromtxt(dir_f[0], dtype=None)
+E = data[:, 0]
+eps_3 = data[:, 1]
+eps_4 = data[:, 3]
+plt.plot(E, eps_4, color="tab:blue", label="RPA (Mo-hBN, scissor)")
+plt.plot(E, eps_3, color="tab:red", label="BSE (Mo-hBN, scissor)")
+
+
+dir_f = files_in_dir("/home/likejun/work/mobn/mobn_oncv_c1/6x6/nonradiative/pbe0_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data-smaller_scissor_for_spindn", "o-y.alpha_q1_diago_bse")[1]
+data = np.genfromtxt(dir_f[0], dtype=None)
+E = data[:, 0]
+eps_im = data[:, 1]
+eps_im1 = data[:, 3]
+#plt.plot(E, eps_im1, color="tab:blue", label="RPA (Mo-hBN, without scissor)")
+#plt.plot(E, eps_im, color="tab:red", label="BSE (Mo-hBN, without scissor)")
+
 
 
 plt.legend()
 plt.xlabel("E (eV)")
-plt.ylabel("Im(alpha)")
+plt.ylabel(r"Im($\epsilon$)")
 #plt.xlim(0, 5)
-#plt.xlim(0, 7)
+#plt.xlim(0, 8)
 #plt.ylim(-0.15, 0.8)
 #plt.ylim(-0.15, 0.8)
 #plt.ylim(-0.5, 10.8)
 plt.show()
-"""
+
 #===============================================================================
 """
-d = files_in_dir("/home/likejun/work/tibn/nk331/tibn_oncv_c1/6x6/nonradiative/pbe0_exx0.41_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data-scissor", "o-z.exc_amplitude_at_7")[1]
+d = files_in_dir("/home/likejun/ctl/cb/cb/qe+jdftx_redo_wufeng_example/vac28B/pristine/job_vacuum", "avg.out")[1]
 data1 = np.genfromtxt(d[0], dtype=None)
 E1 = data1[:, 0]
 eps_im1 = data1[:, 1]

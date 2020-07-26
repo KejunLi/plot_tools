@@ -11,7 +11,8 @@ from extraction import extract_cellpara, extract_aps
 from general_functions import cal_dQ, get_dQ_from_scf
 
 ################################################################################
-directory = "/home/likejun/work/tibn/nk331/barrier-singlet/6x6/test"
+directory = "/home/likejun/work/barrier_c1_cs/6x6"
+h_bar_omega_f = 20.293366452510977
 ################################################################################
 
 (set_dir_scfout, dQ) = get_dQ_from_scf(directory)
@@ -29,13 +30,13 @@ etot_min=min(list_etot)
 y = (np.asarray(list_etot)-etot_min)
 
 E_barrier = max(y)- y[-1]
-rate_eff = np.power(10.0,12) * np.exp(-E_barrier*ev2J/(kB*T_room))
+rate_eff = 3.21703 * np.power(10.0,12) * np.exp(-E_barrier*ev2J/(kB*T_room))
 time_eff = 1.0/rate_eff
-rate_eff = "{:e}".format(rate_eff, ".5f")
-time_eff = "{:e}".format(time_eff, ".5f")
-sys.stdout.write("\rE_barrier = {} eV".format(E_barrier))
-sys.stdout.write("\rrate_eff = {} s^-1".format(rate_eff))
-sys.stdout.write("\rtime_eff = {} s".format(time_eff))
+rate_eff = "{:.5e}".format(rate_eff)
+time_eff = "{:.5e}".format(time_eff)
+sys.stdout.write("\rE_barrier = {} eV \n".format(E_barrier))
+sys.stdout.write("\rrate_eff = {} s^-1 \n".format(rate_eff))
+sys.stdout.write("\rtime_eff = {} s \n".format(time_eff))
 sys.stdout.flush()
 
 config_plot()
@@ -43,5 +44,5 @@ plt.plot(x, y, color="tab:blue", marker="o", markersize=5)
 plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
 plt.ylabel('E (eV)')
 #plt.xlim([-0.1,3.5])
-#plt.ylim([-0.02,0.53])
+plt.ylim([0,0.04])
 plt.show()
