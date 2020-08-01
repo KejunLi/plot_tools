@@ -127,7 +127,7 @@ def plot_ctl(*args):
 
 
 
-def plot_sg_diag(*args, mode=1, show_values=True):
+def plot_sg_diag(*args, mode=1, show_values=True, **kwargs):
     """
     ============================================================================
     +   Default format of input:
@@ -148,6 +148,10 @@ def plot_sg_diag(*args, mode=1, show_values=True):
     +   arg[8]: cbm of pristine hBN referenced to vacuum
     +   arg[9]: plot range in y-axis
     +   arg[10]: label
+    +
+    +   kwargs: additional_label = [texts, coords]
+    +   texts = ["1a'\u2191", "1a''\u2193", ...]
+    +   coords = [(0.01, -5.5), (0.27, -4.5), ...]
     +
     +   mode 1: combine all single-particle diagrams together (default)
     +   mode 2: separately plot each single-particle diagram
@@ -177,8 +181,8 @@ def plot_sg_diag(*args, mode=1, show_values=True):
         labels = ["-1/-2", "0/-1", "+1/0", "+2/+1"]
         for i in range(len(ctl)):
             ax.plot(
-                [2.4*bar_width*2, 2.6*bar_width*2], [ctl[i], ctl[i]],
-                linestyle="solid", linewidth=0.8, color="black"
+                [2.42*bar_width*2, 2.58*bar_width*2], [ctl[i], ctl[i]],
+                linestyle="dashed", linewidth=1.0, color="black"
                 )
             ax.text(
                     2.5*bar_width*2,
@@ -188,19 +192,19 @@ def plot_sg_diag(*args, mode=1, show_values=True):
                     horizontalalignment='center', 
                     verticalalignment="bottom"
                     )
-        # optical CTL
-        #ctl = [-4.61199, -1.14686] # TiBN
-        ctl = [-5.2692, -2.5754] # mobn
+        """# optical CTL
+        #ctl = [-4.9753, -0.6531] # TiBN
+        ctl = [-5.6739, -0.8131] # mobn
         for i in range(len(ctl)):
             ax.plot(
                 [2.4*bar_width*2, 2.6*bar_width*2], [ctl[i], ctl[i]],
                 linestyle="dashed", linewidth=0.8, color="black"
-                )
+                )"""
 ################################################################################
 
         for i, arg in enumerate(args):
             for j, yval in enumerate(arg[1]):   # spin up
-                x = [(i+0.1)*bar_width*2, (i+0.45)*bar_width*2]
+                x = [(i+0.18)*bar_width*2, (i+0.38)*bar_width*2]
                 y = [yval-arg[6], yval-arg[6]]
                 ax.plot(x, y, linewidth=1.0, color='black')
                 if show_values: # show levels' number, occupations and eigenvalues
@@ -242,7 +246,7 @@ def plot_sg_diag(*args, mode=1, show_values=True):
                             verticalalignment='center'
                             )
             for j, yval in enumerate(arg[4]):   # spin down
-                x = [(i+0.55)*bar_width*2, (i+0.9)*bar_width*2]
+                x = [(i+0.62)*bar_width*2, (i+0.82)*bar_width*2]
                 y = [yval-arg[6], yval-arg[6]]
                 ax.plot(x, y, linewidth=1.0, color='black')
                 if show_values: # show levels' number, occupations and eigenvalues
@@ -299,6 +303,11 @@ def plot_sg_diag(*args, mode=1, show_values=True):
                 facecolor="tab:blue",               # The fill color
                 alpha=0.32                      # Transparency of the fill
                 )
+        if "additional_label" in kwargs:
+            texts = kwargs.get("additional_label")[0]
+            coords = kwargs.get("additional_label")[1]
+            for i in range(len(texts)):
+                plt.text(coords[i][0], coords[i][1], texts[i])
 
         ax.set_xlim([0, 1])
         ax.set_ylim([ylim_bot, ylim_top])
