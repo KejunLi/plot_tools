@@ -20,7 +20,8 @@ def best_vals_of_lin_fct(l_x, l_y):
     """
     init_vals = [0.5, 0.5]
     best_vals, covar = curve_fit(lin_fct, l_x, l_y, p0=init_vals)
-    sys.stdout.write("best_vals: {}".format(best_vals))
+    sys.stdout.write("\rbest_vals: {}\n".format(best_vals))
+    sys.stdout.flush()
     return(best_vals)
 
 
@@ -38,7 +39,8 @@ def best_vals_of_quadratic_fct(l_x, l_y):
     # fitting part
     init_vals = [0.5, 0.5, 0.5] # for c0, c1, c2
     best_vals, covar = curve_fit(quadratic_fct, l_x, l_y, p0=init_vals)
-    sys.stdout.write("best_vals: {}".format(best_vals))
+    sys.stdout.write("\rbest_vals: {}\n".format(best_vals))
+    sys.stdout.flush()
     return(best_vals)
 
 
@@ -56,7 +58,8 @@ def best_vals_of_cubic_fct(l_x, l_y):
     # fitting part
     init_vals = [0.5, 0.5, 0.5, 0.5] # for c0, c1, c2
     best_vals, covar = curve_fit(cubic_fct, l_x, l_y, p0=init_vals)
-    sys.stdout.write("best_vals: {}".format(best_vals))
+    sys.stdout.write("\rbest_vals: {}\n".format(best_vals))
+    sys.stdout.flush()
     return(best_vals)
 
 
@@ -74,7 +77,8 @@ def best_vals_of_quadru_fct(l_x, l_y):
     # fitting part
     init_vals = [0.5, 0.5, 0.5, 0.5, 0.5] # for c0, c1, c2
     best_vals, covar = curve_fit(quadru_fct, l_x, l_y, p0=init_vals)
-    sys.stdout.write("best_vals: {}".format(best_vals))
+    sys.stdout.write("\rbest_vals: {}\n".format(best_vals))
+    sys.stdout.flush()
     return(best_vals)
 
 
@@ -93,7 +97,8 @@ def best_vals_of_penta_fct(l_x, l_y):
     # fitting part
     init_vals = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
     best_vals, covar = curve_fit(penta_fct, l_x, l_y, p0=init_vals)
-    sys.stdout.write("best_vals: {}".format(best_vals))
+    sys.stdout.write("\rbest_vals: {}\n".format(best_vals))
+    sys.stdout.flush()
     return(best_vals)
 
 
@@ -111,5 +116,6 @@ def best_vals_of_gaussian(l_x, l_y):
     # fitting part
     init_vals = [0.5, 0.5]
     best_vals, covar = curve_fit(gaussian, l_x, l_y, p0=init_vals)
-    sys.stdout.write("best_vals: {}".format(best_vals))
+    sys.stdout.write("\rbest_vals: {}\n".format(best_vals))
+    sys.stdout.flush()
     return(best_vals)
