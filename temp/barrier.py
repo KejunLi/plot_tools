@@ -11,7 +11,7 @@ from extraction import extract_cellpara, extract_aps
 from general_functions import cal_dQ, get_dQ_from_scf
 
 ################################################################################
-directory = "/home/likejun/work/barrier_c1_cs/6x6"
+directory = "/home/likejun/barrier_cs_c2/"
 h_bar_omega_f = 20.293366452510977
 ################################################################################
 
@@ -44,5 +44,5 @@ plt.plot(x, y, color="tab:blue", marker="o", markersize=5)
 plt.xlabel("\u0394Q (amu$^{1/2}$$\AA$)")
 plt.ylabel('E (eV)')
 #plt.xlim([-0.1,3.5])
-plt.ylim([0,0.04])
+#plt.ylim([0,0.04])
 plt.show()

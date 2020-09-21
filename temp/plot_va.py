@@ -1,38 +1,43 @@
 import numpy as np
-import os
 import matplotlib.pyplot as plt
-plt.style.use("/home/likejun/work/github/plot_tools/styles/wamum")
-S = [ 180, 180, 192 ]            #Sample count (fftbox from log file)
-L = [ 1, 1, 30 ]    #Lattice vector lengths (bohrs)
-#S = [ 140, 140, 96 ] # redo_wufeng_example
-#L = [ 1, 1, 20  ]    #Lattice vector lengths (bohrs)
+
+def scattering(origin, dipole_positions, dipole_orientation, k):
+    Scattering = 0
+    for i, dip in enumerate(dipole_positions):
+        r_vec = origin - dip # displacement
+        r = np.sqrt(np.dot(r_vec, r_vec)) # distance
+        e = r_vec/r # direction vector
+        costheta = np.dot(e, dipole_orientation)
+        sintheta = np.sqrt(1 - costheta**2)
+        scatt = np.exp(np.imag(k*r*1j)) * \
+            (((1-k*r*1j)*(3*costheta**2-1))/r**3+(k*sintheta)**2/r)
+        Scattering += scatt
+        #print(Scattering)
+    return(np.real(Scattering), np.imag(Scattering))
+
+def gen_dip(dimension):
+    number_of_dipoles = dimension**2
+    dipole_positions = np.zeros((number_of_dipoles, 3))
+    for i in range(dimension):
+        for j in range(dimension):
+            dipole_positions[i*dimension+j, 0] = i + 1
+            dipole_positions[i*dimension+j, 1] = j + 1
+    return(dipole_positions)
+    
+
+origin = np.array([0, 0, 1])
+dim = 10
+dips = gen_dip(dim)
+dip_orientation = [0, 1, 0]
+k = np.arange(1, 5.0, 0.1)
+Re_S = np.zeros(len(k))
+Im_S = np.zeros(len(k))
+for i in range(len(k)):
+    Re_S[i] = scattering(origin, dips, dip_orientation, k[i])[0]
+    Im_S[i] = scattering(origin, dips, dip_orientation, k[i])[1]
 
 
-z = np.arange(S[2])*L[2]/S[2]  #z-coordinates of grid points
-
-def readPlanarlyAveraged(fileName, S):
-    out = np.fromfile(fileName, dtype=np.float64)
-    out = np.reshape(out, S)   #Reshape data
-    out = np.mean(out, axis=1) #y average
-    out = np.mean(out, axis=0) #x average
-    return out
-
-directory = "/home/likejun/ctl/cb/cb/redo_tyler_example/repeat_2-JDFTx_wo_Cut/q+1"
-dir_dtot_charge_p1 = os.path.join(directory, "charge.d_tot")
-dir_dtot_neutral = os.path.join(directory, "neutral.d_tot")
-dir_prist = os.path.join(directory, "prist.d_tot")
-dtot_charge_p1 = readPlanarlyAveraged(dir_dtot_charge_p1, S)
-dtot_neutral = readPlanarlyAveraged(dir_dtot_neutral, S)
-prist_Dtot = readPlanarlyAveraged(dir_prist, S)
-#dShift = dir_dtot_charge_p1 - dtot_neutral
-
-#print("VBMshift =", dShift[0]*27.2114)  #Report VBM shift in eV
-#plt.plot(z*0.529, dShift*27.2114, label="Dvac - Dtot");     #Plot with unit conversions
-plt.plot(z*0.529, dtot_charge_p1*27.2114, label="Dtot (q=+1)")
-plt.plot(z*0.529, dtot_neutral*27.2114, label="Dtot (q=0)")
-plt.plot(z*0.529, prist_Dtot*27.2114, label="Dtot (prist)")
-plt.xlabel('z [Angstroms]')
-plt.ylabel('Potential [eV]')
-plt.xlim([0, L[2]*0.529])            #Select first half (top surface only)
-plt.legend()
+plt.plot(k, Re_S)
+plt.plot(k, Im_S)
 plt.show()
+

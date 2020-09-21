@@ -1,7 +1,7 @@
 # see https://github.com/matplotlib/matplotlib/blob/master/lib/matplotlib/mpl-data/stylelib/classic.mplstyle
 
 ### AXES
-axes.titlesize : 20
+axes.titlesize : 18
 axes.labelsize : 18
 axes.facecolor : white       # axes background color
 axes.edgecolor : black       # axes edge color
@@ -15,14 +15,17 @@ xtick.labelsize : 18
 ytick.labelsize : 18
 
 ### FONT
-font.size : 16
+font.size : 18
+font.family : sans-serif
+font.sans-serif : Arial
+font.weight : normal
 
 ### LEGEND
 legend.fontsize : 16
 
 ### FIGURE
-figure.titlesize : 24     # size of the figure title
-figure.figsize : 12, 9    # figure size in inches
-figure.dpi : 120      # figure dots per inch
+figure.titlesize : 18     # size of the figure title
+figure.figsize : 10, 7.5    # figure size in inches
+figure.dpi : 160      # figure dots per inch
 figure.facecolor : white    # figure facecolor
 figure.edgecolor : white

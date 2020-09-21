@@ -7,7 +7,7 @@ axes.facecolor : white       # axes background color
 axes.edgecolor : black       # axes edge color
 
 ### LINES
-lines.linewidth : 2
+lines.linewidth : 1
 lines.markersize : 6
 
 ### TICKS
@@ -16,7 +16,7 @@ ytick.labelsize : 16
 
 ### FONT
 font.size : 16
-#font.family : sans-serif
+font.family : sans-serif
 font.sans-serif : Arial
 font.weight : normal
 
@@ -25,7 +25,7 @@ legend.fontsize : 16
 
 ### FIGURE
 figure.titlesize : 24     # size of the figure title
-figure.figsize : 12, 4    # figure size in inches
-figure.dpi : 120      # figure dots per inch
+figure.figsize : 8, 4    # figure size in inches
+figure.dpi : 280      # figure dots per inch
 figure.facecolor : white    # figure facecolor
 figure.edgecolor : white

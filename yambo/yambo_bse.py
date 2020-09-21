@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 import os
 import sys
@@ -9,13 +10,13 @@ from plot_tools import var_color
 plt.style.use("/home/likejun/work/github/plot_tools/styles/bse-publish")
 
 dir_work = "/home/likejun/work"
-dir_ti = "mobn/mobn_oncv_c1/6x6/nonradiative/pbe0_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data_larger_BSEBands"
+dir_ti = "tibn/nk331/tibn_oncv_c1/6x6/nonradiative/pbe0_exx0.41_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data-scissor"
 dir_mo = "mobn/mobn_oncv_c1/6x6/nonradiative/pbe0_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data"
 
-dir_ti_y = os.path.join(dir_work, dir_ti, "o-y.alpha_q1_haydock_bse")
-dir_ti_z = os.path.join(dir_work, dir_ti, "o-z.alpha_q1_haydock_bse")
+dir_ti_y = os.path.join(dir_work, dir_ti, "o-y.alpha_q1_diago_bse")
+dir_ti_z = os.path.join(dir_work, dir_ti, "o-z.alpha_q1_diago_bse")
 
-dir_mo_y = os.path.join(dir_work, dir_mo, "o-y.alpha_q1_diago_bse")
+dir_mo_y = os.path.join(dir_work, dir_mo, "o-x.alpha_q1_diago_bse")
 dir_mo_z = os.path.join(dir_work, dir_mo, "o-z.alpha_q1_diago_bse")
 
 dir_hbn = "pristine_hbn/1x1/exx0.41/scf-gs/nk18_nbnd500_qe6.1_yambo4.4/data-12ry"
@@ -48,26 +49,25 @@ eps0_mo_z = data_mo_z[:, 3]
 
 ax[0, 0].plot(
     E_bn, eps_bn, linestyle="dashed", color=var_color("black", 0.67), 
-    label="pristine hBN"
+    label="pristine $h$-BN"
     )
 ax[0, 0].plot(E_ti_y, eps_ti_y, color="tab:blue", label="along y-axis")
 ax[0, 0].plot(E_ti_z, eps_ti_z, color="tab:red", label="along z-axis")
 ax[0, 0].set_xlim(0.3, 2.5)
 ax[0, 0].set_ylim(0, 0.3875)
-#ax[0, 0].set_xlabel("E (eV)")
-ax[0, 0].set_ylabel("Im(${\u03B5}$)")
-ax[0, 0].legend()
+ax[0, 0].set_ylabel("Im[$\mathrm{\u03B5_M(\u03c9)}$]")
 ax[0, 0].xaxis.set_major_locator(plt.NullLocator())
 ax[0, 0].yaxis.set_major_locator(plt.NullLocator())
-coord_arrows = [(0.556, 0.125)]#, (1.427, 0.10), (1.663, 0.07), (1.986, 0.35)]
+#ax[0, 0].text(1.0, 0.3, r"Ti$_{\rm VV}$ defect in $h$-BN")
+coord_arrows = [(0.556, 0.14)]#, (1.427, 0.10), (1.663, 0.07), (1.986, 0.35)]
 coord_trans = [(0.556, 0.18)]#, (1.3, 0.16), (1.73, 0.13), (2.25, 0.3)]
 trans = [
-    "1a'\u2191 \u2192 2a'\u2191", 
+    "1a'$_\u2191$ \u2192 2a'$_\u2191$", 
     #"1a''\u2191 \u2192 2a''\u2191 \n" + "...",
     #"1a''\u2191 \u2192 2a''\u2191 \n" + "1a'\u2191 \u2192 2a'\u2191 \n" + "...", 
     #"1a''\u2191 \u2192 2a''\u2191 \n" + "1a'\u2191 \u2192 2a'\u2191 \n" + "..."
     ]
-"""for i in range(len(coord_arrows)):
+for i in range(len(coord_arrows)):
     ax[0, 0].text(
                 coord_arrows[i][0], coord_arrows[i][1], "\u2193",
                 fontsize=16,
@@ -80,45 +80,43 @@ for i in range(len(coord_arrows)):
                 fontsize=16,
                 horizontalalignment='center', 
                 verticalalignment='center'
-                )"""
+                )
 
 
 ax[0, 1].plot(
     E_bn, eps_bn, linestyle="dashed", color=var_color("black", 0.67), 
-    label="pristine hBN"
+    label="pristine $h$-BN"
     )
 ax[0, 1].plot(E_ti_y, eps_ti_y, color="tab:blue", label="along y-axis")
 ax[0, 1].plot(E_ti_z, eps_ti_z, color="tab:red", label="along z-axis")
 ax[0, 1].set_xlim(2.5, 7.5)
 ax[0, 1].set_ylim(0, 15.5)
-#ax[0, 1].set_xlabel("E (eV)")
-#ax[0, 1].set_ylabel("Im(${\u03B5}$)")
+ax[0, 1].legend(loc=3)
+ax[0, 1].text(2.6, 12.5, r"Ti$_{\rm VV}$ defect in $h$-BN")
 ax[0, 1].xaxis.set_major_locator(plt.NullLocator())
 ax[0, 1].yaxis.set_major_locator(plt.NullLocator())
-ax[0, 1].text(3.5, 8, "BSEBands 120-208", fontsize=20)
-
 
 
 ax[1, 0].plot(
     E_bn, eps_bn, linestyle="dashed", color=var_color("black", 0.67), 
     label="pristine hBN"
     )
-ax[1, 0].plot(E_mo_y, eps_mo_y, color="tab:blue", label="along y-axis (Mo-hBN)")
-ax[1, 0].plot(E_mo_z, eps_mo_z, color="tab:red", label="along z-axis (Mo-hBN)")
+ax[1, 0].plot(E_mo_y, eps_mo_y, color="tab:green", label="along x-axis")
 ax[1, 0].set_xlim(0.3, 2.5)
 ax[1, 0].set_ylim(0, 0.3875)
 ax[1, 0].yaxis.set_major_locator(plt.NullLocator())
-ax[1, 0].set_xlabel("E (eV)")
-ax[1, 0].set_ylabel("Im(${\u03B5}$)")
-#ax[1, 0].legend(loc="upper left")
-coord_arrows = [(1.087, 0.08)]#, (1.100, 0.05), (1.562, 0.07)]
-coord_trans = [(1.087, 0.140)]#, (1.25, 0.09), (1.73, 0.12)]
+ax[1, 0].set_xlabel("$\mathrm{\u03c9}$ [eV]")
+ax[1, 0].set_ylabel("Im[$\mathrm{\u03B5_M(\u03c9)}$]")
+#ax[1, 0].text(1.0, 0.3, "Mo$_\mathrm{VV}$ defect in $h$-BN")
+ax[1, 0].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+coord_arrows = [(1.079, 0.12)]#, (1.100, 0.05), (1.562, 0.07)]
+coord_trans = [(1.079, 0.160)]#, (1.25, 0.09), (1.73, 0.12)]
 trans = [
-    "2a'\u2191 \u2192 3a'\u2191", 
-    #"1a'\u2191 \u2192 3a'\u2191 \n",
+    #"2a'\u2191 \u2192 3a'\u2191", 
+    "1a''$_\u2191$ \u2192 3a'$_\u2191$",
     #"1a''\u2191 \u2192 2a''\u2191 \n"
     ]
-"""for i in range(len(coord_arrows)):
+for i in range(len(coord_arrows)):
     ax[1, 0].text(
                 coord_arrows[i][0], coord_arrows[i][1], "\u2193",
                 fontsize=16,
@@ -131,21 +129,19 @@ for i in range(len(coord_arrows)):
                 fontsize=16,
                 horizontalalignment='center', 
                 verticalalignment='center'
-                )"""
+                )
 
 ax[1, 1].plot(
     E_bn, eps_bn, linestyle="dashed", color=var_color("black", 0.67), 
-    label="pristine hBN"
+    label="pristine $h$-BN"
     )
-ax[1, 1].plot(E_mo_y, eps_mo_y, color="tab:blue", label="along y-axis")
-ax[1, 1].plot(E_mo_z, eps_mo_z, color="tab:red", label="along z-axis")
-ax[1, 1].set_xlim(2.5, 7.5)
+ax[1, 1].plot(E_mo_y, eps_mo_y, color="tab:green", label="along x-axis")
+ax[1, 1].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+ax[1, 1].legend(loc=3, bbox_to_anchor=(0.001,0.2))
+ax[1, 1].text(2.6, 12.5, "Mo$_\mathrm{VV}$ defect in $h$-BN")
+ax[1, 1].set_xlim(2.50, 7.50)
 ax[1, 1].set_ylim(0, 15.5)
 ax[1, 1].yaxis.set_major_locator(plt.NullLocator())
-ax[1, 1].set_xlabel("E (eV)")
-#ax[1, 1].set_ylabel("Im(${\u03B5}$)")
-ax[1, 1].text(3.5, 8, "BSEBands 128-200", fontsize=20)
-
-
+ax[1, 1].set_xlabel("$\mathrm{\u03c9}$ [eV]")
 
 plt.show()

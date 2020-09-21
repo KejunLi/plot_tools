@@ -11,9 +11,9 @@ from read_qe import qe_in, qe_out
 
 
 ################################### Input ######################################
-path = "/home/likejun/work/mobn/re_mobn_oncv_c1/6x6/nonradiative"
-xlim = (-1.2, 7)
-ylim = (-0.1, 1.5)
+path = "/home/likejun/work/nbvn_vb/sg15_oncv/out-of-plane/nbvn/6x6/nonradiative"
+xlim = (-1.2, 6)
+ylim = (-0.1, 5)
 arrows = {"left_arrow_shift": 0.15, "right_arrow_shift":0.2,
         "elongate": 0.005, "E_zpl_shift": 0.3, "E_rel_shift": 0.25}
 labels = {"label1": {"x": 0.8, "y": 0.05, "name": "singlet ES Cs 2"},
@@ -22,7 +22,7 @@ labels = {"label1": {"x": 0.8, "y": 0.05, "name": "singlet ES Cs 2"},
 title = ""
 # 1: no labels, no arrow; 2: labels, no arrows
 # 3: no labels, arrows; 4: labels, arrows
-style = 3
+style = 2
 ###############################################################################
 plt.style.use("/home/likejun/work/github/plot_tools/styles/wamum")
 ratio = [
@@ -69,8 +69,12 @@ dQ_2 = dQ_1
 etot_1 = np.zeros(len(ratio), dtype=np.float64)
 etot_2 = np.zeros(len(ratio), dtype=np.float64)
 for i in range(len(ratio)):
-    etot_1[i] = qe_out(path_scfout_1[i]).read_etot()[-1]
-    etot_2[i] = qe_out(path_scfout_2[i]).read_etot()[-1]
+    qe1 = qe_out(path_scfout_1[i])
+    qe2 = qe_out(path_scfout_2[i])
+    qe1.read_etot()
+    qe2.read_etot()
+    etot_1[i] = qe1.etot[-1]
+    etot_2[i] = qe2.etot[-1]
 
 if style == 1:
     plot_config_coord_diag(

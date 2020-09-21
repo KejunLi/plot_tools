@@ -1,29 +1,34 @@
 #!/usr/bin/env python3
 import matplotlib.pyplot as plt
 import numpy as np
-from configuration_for_plot import config_plot, plot_eps
-from var_color import var_color
+import sys
+sys.path.insert(0, "/home/likejun/work/github/qe_post_processing")
+from read_qe import qe_out
+import os
 
-config_plot()
+plt.style.use("/home/likejun/work/github/plot_tools/styles/wamum")
+dir1 = "/home/likejun/work/nbvn/out-of-plane/ecut"
 
-plot_eps("/home/likejun/work",
-"black",
-label="BSE, nk221, GW/BSE@PBE0, y-axis",
-orientation="y",
-type="BSE")
-"""
-plot_eps("/home/likejun/work/tibn/nk331/tibn_oncv_c1/6x6/nonradiative/nbnd1000/data",
-"tab:red",
-label="BSE, nk331, KfnQP_up(dn)_E=2.7(3.6)eV, BSSmod='h'",
-#orientation="y",
-type="BSE")
-"""
+ecut = np.arange(30, 95, 5)
 
+etot = np.zeros(len(ecut))
 
-plt.legend(loc = "upper left")
-plt.xlabel("E (eV)")
+for i in range(len(ecut)):
+    path_gs = os.path.join(dir1, "gs", "decut_"+ str(ecut[i]), "ecut_"+str(ecut[i])+".out")
+    path_es = os.path.join(dir1, "es", "decut_"+ str(ecut[i]), "ecut_"+str(ecut[i])+".out")
+    qe_gs = qe_out(path_gs, show_details=True)
+    qe_es = qe_out(path_es, show_details=True)
+    qe_gs.read_etot()
+    qe_es.read_etot()
+    etot[i] = qe_es.etot[-1] - qe_gs.etot[-1]
+
+plt.axhline(0.4236, linestyle="dashed", linewidth=1, color="k")
+plt.plot(ecut, etot, marker="o", label="$\mathrm{V_B}$")
+
+plt.legend()
+#plt.legend(loc = "upper left")
+plt.xlabel("ecutwfc (Ry)")
 #plt.title(title)
-plt.ylabel("Im(${\u03B5}$)")
-plt.xlim(-0.3, 8.3)
-plt.ylim(-0.4, 4.8)
+plt.ylabel("ZPL (eV)")
+
 plt.show()

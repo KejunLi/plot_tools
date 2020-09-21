@@ -78,23 +78,23 @@ plt.draw()
 plt.show()
 """
 #===============================================================================
-
+"""
 dir_f = files_in_dir("/home/likejun/work/pristine_hbn/1x1/exx0.41/scf-gs/nk18_nbnd500_qe6.1_yambo4.4/test", "o-x.alpha_q1_haydock_bse")[1]
 data = np.genfromtxt(dir_f[0], dtype=None)
 E = data[:, 0]
 eps_im = data[:, 1]
 eps_im1 = data[:, 3]
-plt.plot(E, eps_im1, color="gray", label="RPA (pristine hBN, read ndb.QP)")
-plt.plot(E, eps_im, color="black", linestyle="--", label="BSE (pristine hBN, read ndb.QP)")
+plt.plot(E, eps_im1, color="gray", label="GW+RPA@PBE0 (pristine hBN, read ndb.QP)")
+plt.plot(E, eps_im, color="tab:blue", label="GW+BSE@PBE0 (pristine hBN, read ndb.QP)")
 
 
-d = files_in_dir("/home/likejun/work/tibn/nk331/tibn_oncv_c1/6x6/nonradiative/pbe0_exx0.41_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data-scissor", "o-y.alpha_q1_diago_bse")[1]
+d = files_in_dir("/home/likejun/work/mobn/mobn_oncv_c1/6x6/nonradiative/pbe0_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data", "o-x.alpha_q1_diago_bse")[1]
 data1 = np.genfromtxt(d[0], dtype=None)
 E1 = data1[:, 0]
 eps_1 = data1[:, 1]
 eps_2 = data1[:, 3]
-#plt.plot(E1, eps_2, color="tab:blue", label="RPA (Ti-hBN, with scissor)")
-#plt.plot(E1, eps_1, color="tab:red", label="BSE (Ti-hBN, with scissor)")
+#plt.plot(E1, eps_2, color="tab:purple", label="GW+IP@PBE0 (Mo-hBN, nk331, x)")
+#plt.plot(E1, eps_1, color="tab:red", label="GW+BSE@PBE0 (Mo-hBN, nk331, x)")
 
 
 
@@ -103,68 +103,42 @@ data = np.genfromtxt(dir_f[0], dtype=None)
 E = data[:, 0]
 eps_3 = data[:, 1]
 eps_4 = data[:, 3]
-plt.plot(E, eps_4, color="tab:blue", label="RPA (Mo-hBN, scissor)")
-plt.plot(E, eps_3, color="tab:red", label="BSE (Mo-hBN, scissor)")
+#plt.plot(E, eps_4, color="tab:purple", label="GW+IP@PBE0 (Mo-hBN, nk331, y)")
+#plt.plot(E, eps_3, color="tab:red", label="GW+BSE@PBE0 (Mo-hBN, nk331, y)")
 
 
-dir_f = files_in_dir("/home/likejun/work/mobn/mobn_oncv_c1/6x6/nonradiative/pbe0_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data-smaller_scissor_for_spindn", "o-y.alpha_q1_diago_bse")[1]
+dir_f = files_in_dir("/home/likejun/work/mobn/mobn_oncv_c1/6x6/nonradiative/pbe0_gwbse_nk331_nbnd1000_qe6.1_yambo4.4/data", "o-z.alpha_q1_diago_bse")[1]
 data = np.genfromtxt(dir_f[0], dtype=None)
 E = data[:, 0]
 eps_im = data[:, 1]
 eps_im1 = data[:, 3]
-#plt.plot(E, eps_im1, color="tab:blue", label="RPA (Mo-hBN, without scissor)")
-#plt.plot(E, eps_im, color="tab:red", label="BSE (Mo-hBN, without scissor)")
+plt.plot(E, eps_im1, color="tab:purple", label="GW+IP@PBE0 (Mo-hBN, nk331, z)")
+plt.plot(E, eps_im, color="tab:red", label="GW+BSE@PBE0 (Mo-hBN, nk331, z)")
 
 
 
-plt.legend()
+plt.legend(loc=2)
 plt.xlabel("E (eV)")
 plt.ylabel(r"Im($\epsilon$)")
-#plt.xlim(0, 5)
+#plt.xlim(0, 7)
 #plt.xlim(0, 8)
 #plt.ylim(-0.15, 0.8)
-#plt.ylim(-0.15, 0.8)
 #plt.ylim(-0.5, 10.8)
 plt.show()
-
-#===============================================================================
 """
-d = files_in_dir("/home/likejun/ctl/cb/cb/qe+jdftx_redo_wufeng_example/vac28B/pristine/job_vacuum", "avg.out")[1]
+#===============================================================================
+
+d = files_in_dir("/home/likejun/work/nbnv_66_bse_k33", "o-bse.eps_q1_haydock_bse")[1]
 data1 = np.genfromtxt(d[0], dtype=None)
 E1 = data1[:, 0]
 eps_im1 = data1[:, 1]
-plt.plot(E1, eps_im1)
+eps0_im1 = data1[:, 3]
+plt.plot(E1, eps_im1, label="BSE-noshift", color="k")
+plt.plot(E1-0.15, eps_im1, label="BSE-shift 0.15 eV", color="tab:red")
+plt.xlim(0, 2.6)
 plt.xlabel("E (eV)")
-plt.ylabel("Amp")
-plt.show()
-"""
-#===============================================================================
-"""
-dir = "/home/likejun/work/tibn/nk331/tibn_oncv_c1/6x6/nonradiative/rpa_nk221_bands1000_NGsBlkXs_5ry/data"
-d = files_in_dir(dir, "o-x.eps_q1_haydock_bse")[1]
-data1 = np.genfromtxt(d[0], dtype=None)
-E1 = data1[:, 0]
-eps_im1 = data1[:, 1]
-
-d = files_in_dir(dir, "o-y.eps_q1_haydock_bse")[1]
-data1 = np.genfromtxt(d[0], dtype=None)
-E2 = data1[:, 0]
-eps_im2 = data1[:, 1]
-
-d = files_in_dir(dir, "o-z.eps_q1_haydock_bse")[1]
-data1 = np.genfromtxt(d[0], dtype=None)
-E3 = data1[:, 0]
-eps_im3 = data1[:, 1]
-plt.plot(E1, eps_im1, color="tab:blue", label="GW+BSE@PBE0 (nk 2x2x1), x")
-plt.plot(E2, eps_im2, color="tab:red", label="GW+BSE@PBE0 (nk 2x2x1), y")
-plt.plot(E2, eps_im2, color="tab:green", label="GW+BSE@PBE0 (nk 2x2x1), z")
-
 plt.legend()
-plt.xlabel("E (eV)")
-plt.ylabel("Im(alpha)")
-#plt.xlim(0, 5)
-#plt.ylim(-0.15, 0.8)
-#plt.ylim(-0.5, 10.8)
+#plt.ylim(-0.8, 13)
+plt.ylabel(r"Im($\mathrm{\epsilon}$)")
 plt.show()
-"""
-#===============================================================================
+
